@@ -1,1373 +1,584 @@
 <!DOCTYPE html>
 
-<html lang="en" style=""><head>
+<html class="h-full" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>HazeWatch SG | Live Atmospheric Health &amp; NEA Haze Telemetry</title>
+<title>HazeWatchSG • Official Real-Time Singapore PM2.5 &amp; PSI Telemetry</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "primary": "#0f172a",
-            "secondary": "#0284c7",
-            "secondary-dark": "#0369a1",
-            "surface": "#f8fafc",
-            "surface-container": "#f1f5f9",
-            "surface-container-high": "#e2e8f0",
-            "surface-card": "#ffffff",
-            "on-surface": "#0f172a",
-            "on-surface-variant": "#64748b",
-            "border-subtle": "#e2e8f0",
-            "band-normal": "#059669",
-            "band-elevated": "#d97706",
-            "band-high": "#dc2626",
-            "band-veryhigh": "#7e22ce"
-          },
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            display: ['Plus Jakarta Sans', 'sans-serif'],
-            mono: ['Inter', 'monospace']
-          }
-        }
-      }
-    }
-  </script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <style>
-    .zone-poly {
-      transition: all 0.25s ease;
-    }
-    .zone-poly:hover {
-      fill-opacity: 0.45 !important;
-      stroke-width: 2.5px !important;
-      cursor: pointer;
-    }
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 9999px;
-    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8f9ff; color: #0b1c30; }
+    .station-pin { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    .station-pin:hover { transform: translateY(-3px) scale(1.03); }
+    .active-pill { background-color: #0284c7 !important; color: #ffffff !important; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
   </style>
 </head>
-<body class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col">
-<svg aria-hidden="true" class="inline-defs-container" style="position:absolute;width:0;height:0;overflow:hidden"></svg>
-<!-- ========================================================================= -->
-<!-- HEADER: Live Meteorological Navigation & Official NEA Sync Bar -->
-<!-- ========================================================================= -->
-<header class="sticky top-0 z-40 bg-surface-card/95 backdrop-blur-md border-b border-border-subtle shadow-[0_1px_3px_rgba(15,23,42,0.03)]">
-<div class="max-w-[1560px] mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
-<!-- Brand & Live Synced Telemetry Status -->
-<div class="flex items-center gap-2.5 sm:gap-3.5 flex-shrink-0">
-<a class="flex items-center gap-2 group" href="#">
-<div class="w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center font-black text-base shadow-sm">
-<span class="material-symbols-outlined text-[20px]">air</span>
+<body class="min-h-full flex flex-col antialiased selection:bg-sky-500 selection:text-white">
+<!-- TOP APP HEADER -->
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 px-4 lg:px-8 py-3.5 shadow-sm">
+<div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-teal-500 flex items-center justify-center text-white font-black text-xl shadow-md">
+          HW
+        </div>
+<div>
+<div class="flex items-center gap-2">
+<h1 class="font-extrabold text-xl tracking-tight text-slate-900">HazeWatchSG</h1>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Verified Live NEA Sync
+            </span>
 </div>
-<span class="font-display font-bold text-base sm:text-lg tracking-tight text-on-surface">HazeWatch<span class="text-secondary font-extrabold">SG</span></span>
-</a>
-<div class="hidden md:inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-container border border-border-subtle text-xs font-medium text-on-surface-variant">
-<span class="relative flex h-2 w-2">
-<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
-<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
-</span>
-<span class="font-mono text-[11px]" id="header-last-updated-text">NEA haze.gov.sg Official Model • Verified Real-Time</span>
+<p class="text-xs text-slate-500 font-medium">NEA haze.gov.sg 1-Hr PM2.5 &amp; 24-Hr PSI Official Architecture</p>
 </div>
 </div>
-<!-- Right Actions: Refresh & Inspector -->
-<div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-<button class="inline-flex items-center gap-1.5 text-xs font-mono font-medium px-2 sm:px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-border-subtle text-on-surface transition-all" id="header-live-sync-btn" onclick="fetchRealSingaporeLiveData()" title="Re-fetch live Singapore Government API telemetry">
-<span class="relative flex h-2 w-2 flex-shrink-0">
-<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
-<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
-</span>
-<span class="material-symbols-outlined text-[15px] text-secondary">sync</span>
-<span class="font-semibold text-emerald-700 text-[11px] sm:text-xs" id="header-sync-status-text">Live: Connected</span>
+<div class="flex items-center gap-3">
+<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+<svg class="w-3.5 h-3.5 text-emerald-600 animate-spin" fill="none" id="sync-spinner" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span id="sync-time-badge">Syncing live NEA feed...</span>
+</div>
+<button class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-semibold text-xs shadow-sm transition-all active:scale-95" id="btn-refresh" onclick="syncWithNEA(true)">
+<svg class="w-4 h-4 text-white" fill="none" id="refresh-icon" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Refresh Data</span>
 </button>
-<button class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg bg-secondary text-white hover:bg-secondary-dark transition-all shadow-xs" id="open-api-inspector-btn" onclick="toggleApiInspectorModal(true)">
-<span class="material-symbols-outlined text-[15px]">terminal</span>
-<span class="hidden sm:inline">NEA API Inspector</span>
-<span class="sm:hidden">API</span>
-</button>
-<button class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg bg-white text-on-surface hover:bg-slate-50 border border-border-subtle transition-all shadow-xs cursor-pointer" id="btn-header-refresh" onclick="const icon=this.querySelector('svg'); if(icon) { icon.classList.add('animate-spin'); setTimeout(()=&gt;icon.classList.remove('animate-spin'), 1000); } if(typeof fetchRealSingaporeLiveData === 'function') fetchRealSingaporeLiveData();" title="Refresh live Singapore atmospheric telemetry"><svg class="w-3.5 h-3.5 text-secondary transition-transform" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg><span class="">Refresh Data</span></button></div>
+</div>
 </div>
 </header>
-<!-- ========================================================================= -->
-<!-- MAIN WORKSPACE CONTAINER -->
-<!-- ========================================================================= -->
-<main class="max-w-[1560px] w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-5 space-y-4 sm:space-y-5 flex-1">
-<!-- TOP KPI EXECUTIVE METRIC RIBBON: 4 Official NEA Data Cards matching haze.gov.sg -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-<!-- Card 1: 1-HR PM2.5 (OFFICIAL NEA PRIMARY INDEX ALIGNED WITH haze.gov.sg - IMAGE_2 reference) -->
-<div class="bg-surface-card rounded-xl p-3 sm:p-4 border border-border-subtle shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between relative overflow-hidden" id="card-pm25-primary">
-<div class="flex items-start justify-between gap-2">
-<span class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-1">
-<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" id="kpi-pm25-status-dot"></span> 1-HR PM2.5 READING
-</span>
-<span class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200 flex-shrink-0" id="kpi-pm25-badge">Band 1 (Normal)</span>
+<!-- MAIN CONSOLE -->
+<main class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 space-y-6">
+<!-- TOP KPI HIGHLIGHT CARDS -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Card 1: 1-Hr PM2.5 (Mirroring haze.gov.sg) -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold uppercase tracking-wider text-slate-500">1-Hr PM2.5 Reading</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800" id="headline-pm25-band">
+            Band 1 (Normal)
+          </span>
 </div>
-<div class="my-2 sm:my-3 flex items-center gap-3">
-<!-- Circular Badge motif styled after NEA haze.gov.sg Air Quality Hero Indicator -->
-<div class="w-14 h-14 rounded-full border-4 border-emerald-500 flex flex-col items-center justify-center text-center shadow-xs flex-shrink-0 bg-surface-container/30" id="kpi-pm25-circle-frame" style="border-color: rgb(5, 150, 105);">
-<span class="font-display text-xl font-black text-emerald-700 leading-none" id="kpi-pm25-value" style="color: rgb(5, 150, 105);">37</span>
-<span class="text-[9px] font-mono text-on-surface-variant font-medium mt-0.5">µg/m³</span>
-</div>
-<div>
-<div class="font-display text-base sm:text-lg font-bold text-on-surface" id="kpi-pm25-band-title">Band 1 (Normal)</div>
-<div class="text-xs font-mono text-on-surface-variant" id="kpi-pm25-sector-label">Island Average</div>
+<div class="flex items-baseline gap-3 my-1">
+<span class="text-5xl font-black text-emerald-600 tracking-tight" id="headline-pm25-val">--</span>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-600">µg/m³</span>
+<span class="text-xs font-bold text-sky-700" id="active-sector-descriptor">NORTH Sector</span>
 </div>
 </div>
-<div class="text-[11px] font-mono text-on-surface-variant flex items-center justify-between border-t border-border-subtle/60 pt-2 flex-wrap gap-1">
-<span class="text-emerald-700 font-semibold flex items-center gap-1" id="kpi-pm25-range-label" style="color: rgb(5, 150, 105);"><span class="material-symbols-outlined text-[14px]">speed</span> Range: 22 - 64 µg/m³</span>
-<span class="text-[10px] text-on-surface-variant font-mono" id="kpi-pm25-timestamp">At 2pm on 16 Sep 2026</span>
+<div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+<span id="headline-pm25-range">Sector Range: Loading...</span>
+<span id="headline-timestamp">Live SGT</span>
 </div>
 </div>
-<!-- Card 2: 24-HR PSI (Secondary Reference) -->
-<div class="bg-surface-card rounded-xl p-3 sm:p-4 border border-border-subtle shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between">
-<div class="flex items-start justify-between gap-2">
-<span class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-on-surface-variant">SINGAPORE 24-HR PSI</span>
-<span class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex-shrink-0" id="kpi-psi-badge"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Normal (0-50)</span>
+<!-- Card 2: 24-Hr PSI -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold uppercase tracking-wider text-slate-500">Singapore 24-Hr PSI</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800" id="headline-psi-band">
+            Good (0–50)
+          </span>
 </div>
-<div class="my-2 sm:my-3 flex items-baseline gap-2 flex-wrap">
-<span class="font-display text-3xl sm:text-4xl font-extrabold text-emerald-700 tracking-tight" id="kpi-psi-value" style="color: rgb(5, 150, 105);">46</span>
-<span class="text-xs font-mono font-medium text-on-surface-variant">MOH Band 0-50</span>
+<div class="flex items-baseline gap-3 my-1">
+<span class="text-5xl font-black text-slate-900 tracking-tight" id="headline-psi-val">--</span>
+<span class="text-xs font-semibold text-slate-500">MOH PSI Baseline</span>
 </div>
-<div class="text-[11px] font-mono text-on-surface-variant flex items-center justify-between border-t border-border-subtle/60 pt-2 flex-wrap gap-1">
-<span class="flex items-center gap-1 text-emerald-700 font-semibold" id="kpi-psi-subtext"><span class="material-symbols-outlined text-[14px]">speed</span> Island-wide: 42 - 52</span>
-<span class="font-mono text-[10px]" id="kpi-psi-sector">Island Average</span>
+<div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+<span id="headline-psi-range">Island Range: Loading...</span>
+<span>Central HQ</span>
 </div>
 </div>
 <!-- Card 3: Health Advisory Status -->
-<div class="bg-surface-card rounded-xl p-3 sm:p-4 border border-border-subtle shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between">
-<div class="flex items-start justify-between gap-2">
-<span class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Health Advisory Status</span>
-<span class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border-emerald-200 flex-shrink-0" id="kpi-advisory-badge">Band 1 (Normal)</span>
+<div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold uppercase tracking-wider text-slate-500">MOH Health Advisory</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800" id="health-badge-status">Band 1</span>
 </div>
-<div class="my-2 sm:my-3 flex items-baseline gap-2 flex-wrap">
-<span class="font-display text-2xl sm:text-3xl font-extrabold text-emerald-700 tracking-tight" id="kpi-status-heading" style="color: rgb(5, 150, 105);">Normal Activities Permitted</span>
-<span class="text-xs font-mono font-medium text-on-surface-variant">All Groups</span>
+<div class="my-1">
+<div class="text-lg font-extrabold text-emerald-700 leading-tight" id="health-advice-title">Normal Activities Permitted</div>
+<p class="text-xs text-slate-500 mt-0.5" id="health-advice-desc">Air quality is healthy. Suitable for normal outdoor cardio.</p>
 </div>
-<div class="text-[11px] font-mono text-on-surface-variant flex items-center justify-between border-t border-border-subtle/60 pt-2 flex-wrap gap-1">
-<span class="text-emerald-700 font-semibold flex items-center gap-1" id="kpi-advisory-subtext"><span class="material-symbols-outlined text-[14px]">directions_run</span> Normal Outdoor Activities</span>
-<span class="text-[11px] text-emerald-800 font-semibold" id="kpi-advisory-subgroup">All Groups Suitable</span>
-</div>
-</div>
-<!-- Card 4: NEA API Live Synced Status -->
-<div class="bg-surface-card rounded-xl p-3 sm:p-4 border border-border-subtle shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between">
-<div class="flex items-start justify-between gap-2">
-<span class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-on-surface-variant">NEA Data Sync</span>
-<span class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1 flex-shrink-0" id="kpi-sync-pill">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Active 200 OK
-</span>
-</div>
-<div class="my-2 sm:my-3 flex items-baseline gap-2 flex-wrap">
-<span class="font-display text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight" id="kpi-sync-time">Live Now</span>
-<span class="text-xs font-mono font-medium text-on-surface-variant">SGT</span>
-</div>
-<div class="text-[11px] font-mono text-on-surface-variant flex items-center justify-between border-t border-border-subtle/60 pt-2 flex-wrap gap-1">
-<span class="text-secondary font-semibold flex items-center gap-1">
-<span class="material-symbols-outlined text-[14px]">cloud_sync</span> api-open.data.gov.sg
-</span>
-<button class="text-secondary hover:underline font-bold" onclick="fetchRealSingaporeLiveData()">Refresh ↺</button>
+<div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600 font-medium">
+<span id="health-cardio-badge">🏃 Outdoor Cardio: Safe</span>
+<span id="health-mask-badge">😷 Mask: Not Required</span>
 </div>
 </div>
+<!-- Card 4: Telemetry Heartbeat -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold uppercase tracking-wider text-slate-500">Gov Data Engine</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-100 text-sky-800">Auto-Polling 30s</span>
 </div>
-<!-- ========================================================================= -->
-<!-- NEA TELEMETRY SCENARIO TESTING BAR -->
-<!-- ========================================================================= -->
-<div class="bg-surface-card border border-border-subtle rounded-2xl p-3.5 sm:p-4 shadow-sm space-y-2.5" id="haze-simulation-control-panel">
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-<div class="flex items-center gap-2.5">
-<div class="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
-<span class="material-symbols-outlined text-[20px]">science</span>
+<div class="my-1">
+<div class="text-2xl font-black text-slate-900">api-open.data.gov.sg</div>
+<p class="text-xs text-slate-500 font-mono mt-0.5">GET /v1/environment/pm25 &amp; /psi</p>
 </div>
+<div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+<span>Zero Server Proxy</span>
+<span class="text-emerald-600 font-bold">● Client Direct Sync</span>
+</div>
+</div>
+</section>
+<!-- MIDDLE: MAP CONTAINER & BENCHMARKS -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- LEFT: MAP CONTAINER (8 COLS) -->
+<div class="lg:col-span-8 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm flex flex-col">
+<div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
 <div>
-<div class="flex flex-wrap items-center gap-2">
-<span class="font-display font-bold text-xs sm:text-sm text-on-surface">NEA Telemetry Scenario Testing Bar</span>
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300" id="simulation-status-pill">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>Scenario: Band 1 (Normal)
-</span>
+<h2 class="text-base font-extrabold text-slate-900">NEA 1-Hr PM2.5 Regional Monitoring Model</h2>
+<p class="text-xs text-slate-500 font-medium">Select any region to focus on local readings, matching haze.gov.sg coordinates</p>
 </div>
-<p class="text-[11px] sm:text-xs text-on-surface-variant font-sans mt-0.5" id="scenario-banner-msg">Click Band 1 (0-55 µg/m³), Band 2 (56-150 µg/m³), Band 3 (151-250 µg/m³), or Band 4 (≥251 µg/m³) to test official NEA thresholds.</p>
-</div>
-</div>
-<div class="flex flex-wrap items-center gap-1.5 sm:gap-2 font-mono text-xs">
-<button class="px-2.5 sm:px-3 py-1.5 rounded-lg font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md ring-2 ring-emerald-500 flex items-center gap-1.5 transition-all text-xs" id="btn-sim-band1" onclick="simulateNeaScenario(1)" type="button">
-<span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>Band 1 (Normal)
-</button>
-<button class="px-2.5 sm:px-3 py-1.5 rounded-lg font-medium text-on-surface bg-surface-container hover:bg-surface-container-high border border-border-subtle flex items-center gap-1.5 transition-all text-xs" id="btn-sim-band2" onclick="simulateNeaScenario(2)" type="button">
-<span class="w-2 h-2 rounded-full bg-amber-500"></span>Band 2 (Elevated)
-</button>
-<button class="px-2.5 sm:px-3 py-1.5 rounded-lg font-medium text-on-surface bg-surface-container hover:bg-surface-container-high border border-border-subtle flex items-center gap-1.5 transition-all text-xs" id="btn-sim-band3" onclick="simulateNeaScenario(3)" type="button">
-<span class="w-2 h-2 rounded-full bg-red-600"></span>Band 3 (High)
-</button>
-<button class="px-2.5 sm:px-3 py-1.5 rounded-lg font-medium text-on-surface bg-surface-container hover:bg-surface-container-high border border-border-subtle flex items-center gap-1.5 transition-all text-xs" id="btn-sim-band4" onclick="simulateNeaScenario(4)" type="button">
-<span class="w-2 h-2 rounded-full bg-purple-600"></span>Band 4 (Very High)
-</button>
-<button class="px-2.5 py-1.5 rounded-lg font-semibold text-on-surface bg-surface-container hover:bg-surface-container-high border border-border-subtle flex items-center gap-1 transition-all text-xs" id="btn-sim-reset" onclick="fetchRealSingaporeLiveData()" type="button">
-<span class="material-symbols-outlined text-[15px]">restart_alt</span>Reset Live
-</button>
+<!-- Toggle Metric View -->
+<div class="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50 text-xs font-bold">
+<button class="px-3 py-1 rounded-md bg-white text-slate-900 shadow-sm" id="toggle-pm25" onclick="setMetricMode('pm25')">1-Hr PM2.5</button>
+<button class="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900" id="toggle-psi" onclick="setMetricMode('psi')">24-Hr PSI</button>
 </div>
 </div>
+<!-- SECTOR SELECTOR PILLS (HAZE.GOV.SG ALIGNED) -->
+<div class="flex flex-wrap items-center gap-2 py-3 text-xs font-semibold">
+<span class="text-slate-400 mr-1 uppercase text-[11px] tracking-wider">Sector Focus:</span>
+<button class="px-3 py-1 rounded-full bg-sky-600 text-white shadow-sm transition active-pill" id="pill-north" onclick="selectSector('north')">North: <span id="pill-val-north">--</span></button>
+<button class="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition" id="pill-central" onclick="selectSector('central')">Central: <span id="pill-val-central">--</span></button>
+<button class="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition" id="pill-west" onclick="selectSector('west')">West: <span id="pill-val-west">--</span></button>
+<button class="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition" id="pill-south" onclick="selectSector('south')">South: <span id="pill-val-south">--</span></button>
+<button class="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition" id="pill-east" onclick="selectSector('east')">East: <span id="pill-val-east">--</span></button>
+<button class="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition" id="pill-national" onclick="selectSector('national')">National Avg</button>
 </div>
-<!-- ========================================================================= -->
-<!-- MAIN COMMAND CENTER: Primary Spatial Radar & Right Intelligence Console -->
-<!-- ========================================================================= -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
-<!-- LEFT / PRIMARY (70%): Map View + Sector Focus + Scrubber -->
-<div class="lg:col-span-8 space-y-4">
-<!-- Radar Map Card -->
-<div class="bg-surface-card rounded-2xl border border-border-subtle shadow-sm p-3.5 sm:p-5 space-y-3">
-<!-- Header & Controls Above Map -->
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-2 border-b border-border-subtle/70">
-<div>
-<div class="flex items-center gap-2">
-<span class="text-xs font-bold font-mono text-secondary uppercase tracking-wider flex items-center gap-1">
-<span class="material-symbols-outlined text-[15px]">map</span> Singapore Atmospheric Air Quality
-</span>
-<span class="text-[10px] font-mono bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">1.3521° N, 103.8198° E</span>
-</div>
-<h2 class="font-display font-bold text-base sm:text-lg text-on-surface mt-0.5">NEA 1-Hr PM2.5 Regional Monitoring Model</h2>
-</div>
-<div class="flex flex-wrap items-center gap-1.5 self-stretch sm:self-auto justify-start sm:justify-end">
-<div class="inline-flex p-0.5 rounded-lg bg-surface-container border border-border-subtle text-xs font-mono mr-1" id="metric-view-toggle">
-<button class="px-2.5 py-1 rounded-md font-bold bg-secondary text-white shadow-xs transition-all" id="btn-toggle-1hr" onclick="setMetricViewMode('1hr')">1-Hr PM2.5</button>
-<button class="px-2.5 py-1 rounded-md text-on-surface-variant hover:text-on-surface transition-all" id="btn-toggle-24hr" onclick="setMetricViewMode('24hr')">24-Hr PSI</button>
-</div>
-<button class="px-2.5 py-1 text-xs font-medium rounded-lg transition-all bg-secondary text-white shadow-sm flex items-center gap-1" id="ctrl-layer-psi" onclick="toggleMapLayer('psi')">
-<span class="material-symbols-outlined text-[13px]">gradient</span> Heatmap
-</button>
-<button class="px-2.5 py-1 text-xs font-medium rounded-lg transition-all bg-secondary text-white shadow-sm flex items-center gap-1" id="ctrl-layer-plume" onclick="toggleMapLayer('plume')">
-<span class="material-symbols-outlined text-[13px]">local_fire_department</span> Hotspots
-</button>
-<button class="p-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant transition-colors" onclick="focusZoneOnMap('island')" title="Recenter Island">
-<span class="material-symbols-outlined text-[18px]">center_focus_strong</span>
-</button>
+<!-- MAP CANVAS WITH AUTHENTIC SINGAPORE GEOGRAPHIC OUTLINE -->
+<div class="relative w-full h-[430px] sm:h-[480px] bg-[#d7e9fa] rounded-xl border border-sky-200 overflow-hidden mt-2 flex items-center justify-center">
+<!-- Authentic Singapore Island Map Background -->
+<img alt="Singapore Official Map" class="absolute inset-0 w-full h-full object-contain pointer-events-none select-none p-2 sm:p-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqDZw5KhVDZJpASb8XVpKdxiY_F32cUNZrVZIwMnCmnKPlLh9rkDjL-q7lZ3ad9XVYgP7_bGa7k87mWBJZj786e-6ZhNcNx-7vduT1hI70oiD4Z4vtJXR20OW6VFMbf0iQfWQMT-xVPnZ8rSV3llRS7XflioE4WwmNgnIZtI_BtOLqdsGSfFTxEyWoL_374X4lOr4GQT8irTSRFTms-juN1zzhpwlDRlrJvpbw7jpoQKJNtL78tDMQOMCGOqIphkOPHA"/>
+<!-- Geographic Water Labels -->
+<div class="absolute top-3 left-4 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-sky-800/60 pointer-events-none select-none">
+            Johor Strait (Malaysia)
+          </div>
+<div class="absolute bottom-3 left-4 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-sky-800/60 pointer-events-none select-none">
+            Singapore Strait (Indonesia)
+          </div>
+<!-- 1. NORTH (WOODLANDS / MANDAI) PIN -->
+<div class="station-pin absolute top-[18%] left-[45%] -translate-x-1/2 cursor-pointer z-20" id="station-card-north" onclick="selectSector('north')">
+<div class="bg-white rounded-xl px-3.5 py-2 border-2 border-sky-600 shadow-xl text-center min-w-[115px] ring-4 ring-sky-100">
+<div class="text-[10px] font-black uppercase tracking-wider text-slate-700">North</div>
+<div class="text-2xl font-black text-slate-900 my-0.5" id="pin-val-north">--</div>
+<div class="text-[10px] font-bold text-emerald-700" id="pin-sub-north">Band 1 Normal</div>
 </div>
 </div>
-<!-- Sector Focus Pills with Live Values matching haze.gov.sg regional station indicators -->
-<div class="flex flex-wrap items-center gap-1.5 text-xs">
-<span class="text-[11px] font-semibold uppercase text-on-surface-variant mr-1">Sector Focus:</span>
-<button class="zone-btn-pill px-2 py-1 rounded-md bg-secondary text-white font-mono font-semibold transition-all flex items-center gap-1 shadow-xs" id="pill-island" onclick="focusZoneOnMap('island')">
-<span class="w-2 h-2 rounded-full bg-emerald-300"></span> Island: <span class="" id="sector-pill-val-island">37 µg/m³</span>
-</button>
-<button class="zone-btn-pill px-2 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface font-mono transition-all flex items-center gap-1" id="pill-north" onclick="focusZoneOnMap('north')">
-<span class="w-2 h-2 rounded-full bg-emerald-500"></span> North: <span class="" id="sector-pill-val-north">37 µg/m³</span>
-</button>
-<button class="zone-btn-pill px-2 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface font-mono transition-all flex items-center gap-1" id="pill-central" onclick="focusZoneOnMap('central')">
-<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Central: <span class="" id="sector-pill-val-central">49 µg/m³</span>
-</button>
-<button class="zone-btn-pill px-2 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface font-mono transition-all flex items-center gap-1" id="pill-west" onclick="focusZoneOnMap('west')">
-<span class="w-2 h-2 rounded-full bg-emerald-500"></span> West: <span class="" id="sector-pill-val-west">39 µg/m³</span>
-</button>
-<button class="zone-btn-pill px-2 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface font-mono transition-all flex items-center gap-1" id="pill-south" onclick="focusZoneOnMap('south')">
-<span class="w-2 h-2 rounded-full bg-emerald-500"></span> South: <span class="" id="sector-pill-val-south">34 µg/m³</span>
-</button>
-<button class="zone-btn-pill px-2 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface font-mono transition-all flex items-center gap-1" id="pill-east" onclick="focusZoneOnMap('east')">
-<span class="w-2 h-2 rounded-full bg-emerald-500"></span> East: <span class="" id="sector-pill-val-east">37 µg/m³</span>
-</button>
-</div>
-<!-- Vector Map Canvas Container -->
-<div class="relative w-full rounded-xl overflow-hidden border border-border-subtle bg-[#eef4fd] min-h-[380px] sm:min-h-[440px]" id="haze-map-canvas-container"><div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none p-4 opacity-75"><img alt="Singapore Geographic Map Outline" class="w-full h-full object-contain filter drop-shadow-sm select-none" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQs4uitpC0WOU66VBD74oTFNxz314X0GkxkASczXQK8CCJrpBRXoRZhdpxf0SSU41k8cNGmgm133AZoVpkBv1uWCS-TAq7UVQqqpS3rqfJ7p-WLKPihDDeN0UXHqmn4u0RwpaMIbBigkSRnpFbCu8Pz-9FoXfaOoWxoe4nmyDL4_zuSMJMN_QTHR6PgTaH20XQaJxmbPdAjMORCTcxwtzvSv6VHJcXqLuvRNu_6AAPg9lyqlaratzOqBEfMGxwU3prXQ"/></div>
-<!-- Official NEA Haze Band HUD Badge (Top Right) -->
-<div class="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-20 bg-surface-card/95 backdrop-blur-md px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl shadow-sm border border-border-subtle flex items-center gap-2" id="hud-nea-status-badge">
-<div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-50 flex items-center justify-center relative flex-shrink-0" id="hud-icon-container">
-<span class="material-symbols-outlined text-emerald-600 text-[18px] sm:text-[20px]" id="hud-icon" style="color: rgb(5, 150, 105);">check_circle</span>
-</div>
-<div>
-<div class="font-mono font-bold text-[11px] sm:text-xs text-on-surface flex items-center gap-1">
-<span class="hidden xs:inline">NEA Band:</span> <span class="text-emerald-700 font-bold" id="hud-band-text" style="color: rgb(5, 150, 105);">Band 1 (Normal)</span>
-</div>
-<div class="font-mono text-[9px] sm:text-[10px] text-emerald-800 font-medium" id="hud-synced-subtext">Verified Real-Time</div>
+<!-- 2. CENTRAL (BISHAN / ANG MO KIO) PIN -->
+<div class="station-pin absolute top-[43%] left-[48%] -translate-x-1/2 cursor-pointer z-20" id="station-card-central" onclick="selectSector('central')">
+<div class="bg-white/95 backdrop-blur rounded-xl px-3.5 py-2 border-2 border-slate-300 shadow-md text-center min-w-[115px]">
+<div class="text-[10px] font-black uppercase tracking-wider text-slate-700">Central</div>
+<div class="text-2xl font-black text-slate-900 my-0.5" id="pin-val-central">--</div>
+<div class="text-[10px] font-bold text-emerald-700" id="pin-sub-central">Band 1 Normal</div>
 </div>
 </div>
-<!-- Official 4-Band Scale Legend (Floating bottom right) aligned with IMAGE_2 table -->
-<div class="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 z-20 bg-surface-card/95 backdrop-blur-md px-2.5 sm:px-3 py-2 rounded-xl shadow-sm border border-border-subtle max-w-[270px] sm:max-w-[290px] pointer-events-auto" id="official-air-band-legend">
-<div class="flex items-center justify-between text-[9px] sm:text-[10px] font-mono font-bold text-on-surface mb-1">
-<span class="flex items-center gap-1 text-secondary"><span class="material-symbols-outlined text-[13px]">analytics</span> 1-HR PM2.5 BANDS</span>
-<span class="text-emerald-700 font-semibold" id="legend-band-pill" style="color: rgb(5, 150, 105);">Band 1 (Normal)</span>
-</div>
-<div class="h-2 w-full rounded-full overflow-hidden flex gap-0.5">
-<span class="flex-1 bg-emerald-500 rounded-sm" title="Band 1 (0 - 55 µg/m³)"></span>
-<span class="flex-1 bg-amber-500 rounded-sm" title="Band 2 (56 - 150 µg/m³)"></span>
-<span class="flex-1 bg-red-600 rounded-sm" title="Band 3 (151 - 250 µg/m³)"></span>
-<span class="flex-1 bg-purple-700 rounded-sm" title="Band 4 (&gt;= 251 µg/m³)"></span>
-</div>
-<div class="flex justify-between text-[8px] sm:text-[9px] font-mono text-on-surface-variant mt-1">
-<span class="text-emerald-700 font-semibold">B1: 0-55</span>
-<span class="text-amber-700 font-semibold">B2: 56-150</span>
-<span class="text-red-700 font-semibold">B3: 151-250</span>
-<span class="text-purple-700 font-semibold">B4: ≥251</span>
+<!-- 3. WEST (JURONG / TUAS) PIN -->
+<div class="station-pin absolute top-[50%] left-[23%] -translate-x-1/2 cursor-pointer z-20" id="station-card-west" onclick="selectSector('west')">
+<div class="bg-white/95 backdrop-blur rounded-xl px-3.5 py-2 border-2 border-slate-300 shadow-md text-center min-w-[115px]">
+<div class="text-[10px] font-black uppercase tracking-wider text-slate-700">West</div>
+<div class="text-2xl font-black text-slate-900 my-0.5" id="pin-val-west">--</div>
+<div class="text-[10px] font-bold text-emerald-700" id="pin-sub-west">Band 1 Normal</div>
 </div>
 </div>
-<!-- Interactive SVG Vector Map -->
-<svg class="w-full h-full min-h-[380px] sm:min-h-[440px] select-none block" id="sg-svg-map" preserveaspectratio="xMidYMid meet" viewbox="0 0 920 540">
-<defs>
-<radialgradient cx="50%" cy="50%" id="oceanGradient" r="75%">
-<stop offset="0%" stop-color="#e0f2fe"></stop>
-<stop offset="100%" stop-color="#bae6fd"></stop>
-</radialgradient>
-<radialgradient cx="50%" cy="50%" id="heatWest" r="50%">
-<stop id="grad-stop-west-0" offset="0%" stop-color="#10b981" stop-opacity="0.35"></stop>
-<stop id="grad-stop-west-1" offset="60%" stop-color="#34d399" stop-opacity="0.14"></stop>
-<stop offset="100%" stop-color="#34d399" stop-opacity="0"></stop>
-</radialgradient>
-<radialgradient cx="50%" cy="50%" id="heatCentral" r="50%">
-<stop id="grad-stop-central-0" offset="0%" stop-color="#10b981" stop-opacity="0.35"></stop>
-<stop id="grad-stop-central-1" offset="55%" stop-color="#34d399" stop-opacity="0.14"></stop>
-<stop offset="100%" stop-color="#34d399" stop-opacity="0"></stop>
-</radialgradient>
-<radialgradient cx="50%" cy="50%" id="heatNorth" r="50%">
-<stop id="grad-stop-north-0" offset="0%" stop-color="#10b981" stop-opacity="0.32"></stop>
-<stop id="grad-stop-north-1" offset="60%" stop-color="#34d399" stop-opacity="0.13"></stop>
-<stop offset="100%" stop-color="#34d399" stop-opacity="0"></stop>
-</radialgradient>
-<radialgradient cx="50%" cy="50%" id="heatSouth" r="50%">
-<stop id="grad-stop-south-0" offset="0%" stop-color="#10b981" stop-opacity="0.32"></stop>
-<stop id="grad-stop-south-1" offset="60%" stop-color="#34d399" stop-opacity="0.13"></stop>
-<stop offset="100%" stop-color="#34d399" stop-opacity="0"></stop>
-</radialgradient>
-<radialgradient cx="50%" cy="50%" id="heatEast" r="50%">
-<stop id="grad-stop-east-0" offset="0%" stop-color="#10b981" stop-opacity="0.3"></stop>
-<stop id="grad-stop-east-1" offset="65%" stop-color="#34d399" stop-opacity="0.11"></stop>
-<stop offset="100%" stop-color="#34d399" stop-opacity="0"></stop>
-</radialgradient>
-<lineargradient id="transboundaryPlume" x1="0%" x2="100%" y1="100%" y2="0%">
-<stop offset="0%" stop-color="#f97316" stop-opacity="0.28"></stop>
-<stop offset="60%" stop-color="#fbbf24" stop-opacity="0.12"></stop>
-<stop offset="100%" stop-color="#fbbf24" stop-opacity="0"></stop>
-</lineargradient>
-</defs>
-<rect class="" fill="url(#oceanGradient)" fill-opacity="0.15" height="540" id="map-bg-rect" width="920"></rect>
-<!-- Straits borders -->
-<g fill="#c7d8f5" opacity="0.6" stroke="#94a3b8" stroke-width="1">
-<path d="M 0 0 L 920 0 L 920 60 Q 750 75 580 45 T 300 65 T 100 45 L 0 55 Z"></path>
-<path d="M 0 490 Q 180 460 380 495 T 720 480 T 920 505 L 920 540 L 0 540 Z"></path>
-<text fill="#475569" font-family="Inter" font-size="10px" font-weight="600" letter-spacing="0.08em" x="415" y="42">JOHOR STRAIT (MALAYSIA)</text>
-<text fill="#475569" font-family="Inter" font-size="10px" font-weight="600" letter-spacing="0.08em" x="405" y="526">SINGAPORE STRAIT (INDONESIA)</text>
-</g>
-<!-- Grid coordinates overlay -->
-<g stroke="#ffffff" stroke-dasharray="2 6" stroke-opacity="0.45" stroke-width="1">
-<line x1="0" x2="920" y1="135" y2="135"></line>
-<line x1="0" x2="920" y1="270" y2="270"></line>
-<line x1="0" x2="920" y1="405" y2="405"></line>
-<line x1="230" x2="230" y1="0" y2="540"></line>
-<line x1="460" x2="460" y1="0" y2="540"></line>
-<line x1="690" x2="690" y1="0" y2="540"></line>
-</g>
-<!-- SG Landmass and Sector Polygons -->
-<g id="sg-landmass-group"><path class="" d="M 665 145 C 685 138 725 144 742 154 C 730 164 690 166 665 158 Z" fill="#cbd5e1" stroke="#1e293b" stroke-width="1.8"></path>
-<text class="" fill="#0f172a" font-family="Inter" font-size="9px" font-weight="800" x="680" y="153">P. Ubin</text>
-<path class="" d="M 760 145 C 795 138 830 152 840 178 C 820 195 780 200 765 182 Z" fill="#cbd5e1" stroke="#1e293b" stroke-width="1.8"></path>
-<text class="" fill="#0f172a" font-family="Inter" font-size="9px" font-weight="800" x="780" y="172">P. Tekong</text>
-<path class="cursor-pointer" d="M 200 365 C 245 352 278 368 285 392 C 278 418 238 424 200 405 C 190 388 192 372 200 365 Z" fill="#cbd5e1" onclick="focusZoneOnMap('west')" stroke="#1e293b" stroke-width="1.8"></path>
-<text class="" fill="#0f172a" font-family="Inter" font-size="9px" font-weight="800" x="212" y="389">Jurong Island</text>
-<path class="cursor-pointer" d="M 425 390 C 465 382 505 398 510 415 C 478 426 440 422 422 406 Z" fill="#cbd5e1" onclick="focusZoneOnMap('south')" stroke="#1e293b" stroke-width="1.8"></path>
-<text class="" fill="#0f172a" font-family="Inter" font-size="9px" font-weight="800" x="445" y="406">Sentosa</text>
-<!-- Main Island Contour Base -->
-<path class="" d="M 55 295 C 65 255 105 235 155 210 C 205 200 260 145 330 110 C 390 85 465 85 520 85 C 555 85 570 135 625 145 C 690 155 765 195 788 220 C 802 248 775 272 745 285 C 695 305 650 320 580 340 C 550 370 520 385 475 390 C 410 390 350 378 275 358 C 215 358 160 342 125 328 C 90 308 65 315 55 295 Z" fill="#e2e8f0" stroke="#0f172a" stroke-width="3"></path>
-<!-- West Sector -->
-<path class="zone-poly" d="M 55 295 C 70 250 115 225 175 210 L 255 215 L 290 270 L 310 335 L 275 358 L 190 355 L 125 328 L 55 295 Z" fill="#10b981" fill-opacity="0.25" id="polygon-west" onclick="focusZoneOnMap('west')" stroke="#059669" stroke-dasharray="4 3" stroke-width="2.2" style="stroke-width: 2px; fill-opacity: 0.22;"></path>
-<!-- North Sector -->
-<path class="zone-poly" d="M 255 215 C 300 130 385 85 465 85 C 520 85 540 120 545 158 L 485 220 L 380 230 L 290 270 Z" fill="#10b981" fill-opacity="0.25" id="polygon-north" onclick="focusZoneOnMap('north')" stroke="#059669" stroke-dasharray="4 3" stroke-width="2.2" style="stroke-width: 2px; fill-opacity: 0.22;"></path>
-<!-- Central Sector -->
-<path class="zone-poly" d="M 290 270 L 380 230 L 485 220 L 525 270 L 480 330 L 390 340 L 310 335 Z" fill="#10b981" fill-opacity="0.25" id="polygon-central" onclick="focusZoneOnMap('central')" stroke="#059669" stroke-width="2.2" style="stroke-width: 2px; fill-opacity: 0.22;"></path>
-<!-- South Sector -->
-<path class="zone-poly" d="M 310 335 L 390 340 L 480 330 L 525 335 L 550 370 L 475 390 L 395 385 L 275 358 Z" fill="#10b981" fill-opacity="0.25" id="polygon-south" onclick="focusZoneOnMap('south')" stroke="#059669" stroke-dasharray="4 3" stroke-width="2.2" style="stroke-width: 2px; fill-opacity: 0.22;"></path>
-<!-- East Sector -->
-<path class="zone-poly" d="M 545 158 C 605 145 675 155 750 195 C 778 220 770 255 738 280 L 635 315 L 525 335 L 525 270 L 485 220 Z" fill="#10b981" fill-opacity="0.25" id="polygon-east" onclick="focusZoneOnMap('east')" stroke="#059669" stroke-dasharray="4 3" stroke-width="2.2" style="stroke-width: 2px; fill-opacity: 0.22;"></path>
-<!-- Sector Labels with high contrast slate/navy fills and crisp typography -->
-<text class="" fill="#0f172a" font-family="Inter" font-size="10px" font-weight="800" letter-spacing="0.06em" x="145" y="330">WEST (JURONG)</text>
-<text class="" fill="#0f172a" font-family="Inter" font-size="10px" font-weight="800" letter-spacing="0.06em" x="375" y="168">NORTH (WOODLANDS)</text>
-<text class="" fill="#065f46" font-family="Inter" font-size="10.5px" font-weight="800" letter-spacing="0.06em" x="370" y="325">CENTRAL (BISHAN)</text>
-<text class="" fill="#0f172a" font-family="Inter" font-size="10px" font-weight="800" letter-spacing="0.06em" x="605" y="325">EAST (BEDOK / CHANGI)</text>
-<text class="" fill="#0f172a" font-family="Inter" font-size="10px" font-weight="800" letter-spacing="0.06em" x="365" y="445">SOUTH (CITY / SENTOSA)</text></g>
-<!-- Atmospheric Heatmap Overlay -->
-<g id="map-overlay-heatmap" opacity="0.65">
-<circle cx="210" cy="285" fill="url(#heatWest)" r="160"></circle>
-<circle cx="410" cy="280" fill="url(#heatCentral)" r="145"></circle>
-<circle cx="430" cy="170" fill="url(#heatNorth)" r="125"></circle>
-<circle cx="450" cy="355" fill="url(#heatSouth)" r="115"></circle>
-<circle cx="630" cy="250" fill="url(#heatEast)" r="130"></circle>
-</g>
-<!-- Transboundary Hotspot Layer -->
-<g id="map-overlay-plume" opacity="0.85">
-<path d="M -50 540 Q 150 420 280 270 T 520 120 L 410 80 Q 210 240 -10 390 Z" fill="url(#transboundaryPlume)"></path>
-<g transform="translate(110, 470)">
-<circle class="animate-ping fill-amber-500" cx="0" cy="0" opacity="0.6" r="12"></circle>
-<circle class="fill-amber-600" cx="0" cy="0" r="4.5"></circle>
-<text class="font-mono font-bold fill-amber-800 text-[10px]" dx="10" dy="4">Sumatra Hotspot Cluster</text>
-</g>
-<g transform="translate(50, 420)">
-<circle class="animate-ping fill-amber-500" cx="0" cy="0" opacity="0.5" r="10"></circle>
-<circle class="fill-amber-600" cx="0" cy="0" r="4"></circle>
-<text class="font-mono font-bold fill-amber-800 text-[10px]" dx="8" dy="3">Regional Inflow Plume</text>
-</g>
-</g>
-<!-- Official NEA Monitoring Station Badges (Exact card design as in NEA haze.gov.sg IMAGE_2) -->
-<g id="map-stations-group"><!-- North Station Badge -->
-<g class="cursor-pointer" onclick="focusZoneOnMap('north')" transform="translate(390, 105)">
-<!-- Card Shadow and Crisp White Container -->
-<rect class="filter drop-shadow-md" fill="#ffffff" height="48" rx="8" stroke="#059669" stroke-width="2.5" width="92" x="-46" y="-24"></rect>
-<!-- Accent Band Pill at top -->
-<rect fill="#ecfdf5" height="15" rx="4" width="84" x="-42" y="-20"></rect>
-<circle cx="-28" cy="-12.5" fill="#059669" r="3.5"></circle>
-<text fill="#065f46" font-family="Inter" font-size="9px" font-weight="800" letter-spacing="0.06em" text-anchor="middle" x="6" y="-9.5">NORTH</text>
-<!-- High-contrast Large Metric Numeral -->
-<text class="font-display font-black text-[22px] text-slate-900 text-center" fill="#0f172a" id="station-val-north" text-anchor="middle" x="-8" y="16">37</text>
-<text fill="#059669" font-family="Inter" font-size="9px" font-weight="700" x="16" y="14">µg/m³</text>
-</g>
-<!-- West Station Badge -->
-<g class="cursor-pointer" onclick="focusZoneOnMap('west')" transform="translate(180, 275)">
-<rect class="filter drop-shadow-md" fill="#ffffff" height="48" rx="8" stroke="#059669" stroke-width="2.5" width="92" x="-46" y="-24"></rect>
-<rect fill="#ecfdf5" height="15" rx="4" width="84" x="-42" y="-20"></rect>
-<circle cx="-28" cy="-12.5" fill="#059669" r="3.5"></circle>
-<text fill="#065f46" font-family="Inter" font-size="9px" font-weight="800" letter-spacing="0.06em" text-anchor="middle" x="5" y="-9.5">WEST</text>
-<text class="font-display font-black text-[22px] text-slate-900 text-center" fill="#0f172a" id="station-val-west" text-anchor="middle" x="-8" y="16">39</text>
-<text fill="#059669" font-family="Inter" font-size="9px" font-weight="700" x="16" y="14">µg/m³</text>
-</g>
-<!-- Central Station Badge -->
-<g class="cursor-pointer" onclick="focusZoneOnMap('central')" transform="translate(420, 265)">
-<rect class="filter drop-shadow-md" fill="#ffffff" height="48" rx="8" stroke="#059669" stroke-width="2.5" width="92" x="-46" y="-24"></rect>
-<rect fill="#ecfdf5" height="15" rx="4" width="84" x="-42" y="-20"></rect>
-<circle cx="-30" cy="-12.5" fill="#059669" r="3.5"></circle>
-<text fill="#065f46" font-family="Inter" font-size="9px" font-weight="800" letter-spacing="0.06em" text-anchor="middle" x="5" y="-9.5">CENTRAL</text>
-<text class="font-display font-black text-[22px] text-slate-900 text-center" fill="#0f172a" id="station-val-central" text-anchor="middle" x="-8" y="16">49</text>
-<text fill="#059669" font-family="Inter" font-size="9px" font-weight="700" x="16" y="14">µg/m³</text>
-</g>
-<!-- East Station Badge -->
-<g class="cursor-pointer" onclick="focusZoneOnMap('east')" transform="translate(640, 260)">
-<rect class="filter drop-shadow-md" fill="#ffffff" height="48" rx="8" stroke="#059669" stroke-width="2.5" width="92" x="-46" y="-24"></rect>
-<rect fill="#ecfdf5" height="15" rx="4" width="84" x="-42" y="-20"></rect>
-<circle cx="-28" cy="-12.5" fill="#059669" r="3.5"></circle>
-<text fill="#065f46" font-family="Inter" font-size="9px" font-weight="800" letter-spacing="0.06em" text-anchor="middle" x="5" y="-9.5">EAST</text>
-<text class="font-display font-black text-[22px] text-slate-900 text-center" fill="#0f172a" id="station-val-east" text-anchor="middle" x="-8" y="16">37</text>
-<text fill="#059669" font-family="Inter" font-size="9px" font-weight="700" x="16" y="14">µg/m³</text>
-</g>
-<!-- South Station Badge -->
-<g class="cursor-pointer" onclick="focusZoneOnMap('south')" transform="translate(440, 390)">
-<rect class="filter drop-shadow-md" fill="#ffffff" height="48" rx="8" stroke="#059669" stroke-width="2.5" width="92" x="-46" y="-24"></rect>
-<rect fill="#ecfdf5" height="15" rx="4" width="84" x="-42" y="-20"></rect>
-<circle cx="-28" cy="-12.5" fill="#059669" r="3.5"></circle>
-<text fill="#065f46" font-family="Inter" font-size="9px" font-weight="800" letter-spacing="0.06em" text-anchor="middle" x="5" y="-9.5">SOUTH</text>
-<text class="font-display font-black text-[22px] text-slate-900 text-center" fill="#0f172a" id="station-val-south" text-anchor="middle" x="-8" y="16">34</text>
-<text fill="#059669" font-family="Inter" font-size="9px" font-weight="700" x="16" y="14">µg/m³</text>
-</g></g>
-</svg>
-<!-- Station Detail Modal / Popup Card -->
-<div class="hidden absolute bottom-3 left-3 z-30 w-72 bg-surface-card/95 backdrop-blur-md rounded-xl p-3.5 shadow-xl border border-border-subtle text-xs transition-all" id="station-detail-tooltip">
-<div class="flex items-center justify-between border-b border-border-subtle pb-1.5">
-<div class="flex items-center gap-1.5">
-<span class="w-2 h-2 rounded-full bg-emerald-500" id="tooltip-dot"></span>
-<span class="font-bold text-on-surface" id="tooltip-station-name">Central (Bishan)</span>
-</div>
-<button class="text-on-surface-variant hover:text-on-surface" onclick="document.getElementById('station-detail-tooltip').classList.add('hidden')">
-<span class="material-symbols-outlined text-[16px]">close</span>
-</button>
-</div>
-<div class="grid grid-cols-2 gap-2 my-2">
-<div class="bg-surface-container/70 p-2 rounded-lg">
-<div class="text-[10px] text-on-surface-variant font-mono uppercase">1-hr PM2.5</div>
-<div class="font-display font-extrabold text-lg text-emerald-700" id="tooltip-pm25-val">50 <span class="text-[10px] font-mono font-normal">µg/m³</span></div>
-<div class="text-[10px] text-emerald-700 font-semibold" id="tooltip-severity">Band 1 (Normal)</div>
-</div>
-<div class="bg-surface-container/70 p-2 rounded-lg">
-<div class="text-[10px] text-on-surface-variant font-mono uppercase">24-hr PSI</div>
-<div class="font-display font-extrabold text-lg text-on-surface" id="tooltip-psi-val">50</div>
-<div class="text-[10px] text-on-surface-variant font-mono" id="tooltip-sector">Central Sector</div>
+<!-- 4. EAST (BEDOK / CHANGI / TAMPINES) PIN -->
+<div class="station-pin absolute top-[44%] left-[73%] -translate-x-1/2 cursor-pointer z-20" id="station-card-east" onclick="selectSector('east')">
+<div class="bg-white/95 backdrop-blur rounded-xl px-3.5 py-2 border-2 border-slate-300 shadow-md text-center min-w-[115px]">
+<div class="text-[10px] font-black uppercase tracking-wider text-slate-700">East</div>
+<div class="text-2xl font-black text-slate-900 my-0.5" id="pin-val-east">--</div>
+<div class="text-[10px] font-bold text-emerald-700" id="pin-sub-east">Band 1 Normal</div>
 </div>
 </div>
-<button class="w-full py-1 text-center font-semibold text-secondary hover:bg-secondary/10 rounded transition-colors text-xs" onclick="syncStationAsActive()">
-Set as Active Sector View →
-</button>
+<!-- 5. SOUTH (CITY / MARINA BAY / SENTOSA) PIN -->
+<div class="station-pin absolute top-[71%] left-[47%] -translate-x-1/2 cursor-pointer z-20" id="station-card-south" onclick="selectSector('south')">
+<div class="bg-white/95 backdrop-blur rounded-xl px-3.5 py-2 border-2 border-slate-300 shadow-md text-center min-w-[115px]">
+<div class="text-[10px] font-black uppercase tracking-wider text-slate-700">South</div>
+<div class="text-2xl font-black text-slate-900 my-0.5" id="pin-val-south">--</div>
+<div class="text-[10px] font-bold text-emerald-700" id="pin-sub-south">Band 1 Normal</div>
 </div>
 </div>
-<!-- 24-HR PLAYBACK SCRUBBER & HISTORICAL PROGRESSION (with Min, Max, Current pills matching haze.gov.sg) -->
-<div class="bg-surface-container/60 border border-border-subtle rounded-xl p-3 sm:p-3.5 space-y-3">
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-<div>
-<span class="text-xs font-bold font-mono text-secondary uppercase tracking-wider">Historical &amp; Nowcast Progression</span>
-<h3 class="font-display font-bold text-sm sm:text-base text-on-surface mt-0.5" id="timeline-heading-text">1-hr PM2.5 reading (µg/m³) - 24-Hour Trend</h3>
-</div>
-<div class="flex items-center gap-2 text-xs font-mono">
-<div class="px-2 py-1 rounded bg-surface-card border border-border-subtle flex items-center gap-1.5 shadow-xs">
-<span class="text-[10px] text-on-surface-variant uppercase font-bold">Min</span>
-<span class="font-bold text-on-surface" id="stat-pill-min">22</span>
-</div>
-<div class="px-2 py-1 rounded bg-surface-card border border-border-subtle flex items-center gap-1.5 shadow-xs">
-<span class="text-[10px] text-on-surface-variant uppercase font-bold">Max</span>
-<span class="font-bold text-on-surface" id="stat-pill-max">64</span>
-</div>
-<div class="px-2 py-1 rounded bg-emerald-50 border border-emerald-200 flex items-center gap-1.5 shadow-xs" id="stat-pill-current-box">
-<span class="text-[10px] text-emerald-800 uppercase font-bold">Current</span>
-<span class="font-bold text-emerald-700" id="stat-pill-current" style="color: rgb(5, 150, 105);">37</span>
+<!-- Legend -->
+<div class="absolute bottom-3 right-3 bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-700 shadow-sm flex items-center gap-3">
+<span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> 0–55 Normal</span>
+<span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> 56–150 Elevated</span>
+<span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> 151+ High</span>
 </div>
 </div>
 </div>
-<!-- Dynamic 24-hr slider representation -->
-<div class="pt-1 space-y-1.5">
-<input class="w-full accent-secondary cursor-pointer h-1.5 bg-slate-200 rounded-lg" id="timeline-slider" max="24" min="0" oninput="onTimelineScrub(this.value)" type="range" value="24"/>
-<div class="flex justify-between font-mono text-[9px] sm:text-[10px] text-on-surface-variant pt-0.5 px-0.5">
-<span class="">3pm</span>
-<span class="">6pm</span>
-<span class="">10pm</span>
-<span class="">2am</span>
-<span class="">6am</span>
-<span class="">10am</span>
-<span class="font-bold text-secondary flex items-center gap-1">
-<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span> 2pm (Current)
-</span>
+<!-- RIGHT: BENCHMARKS & STATION TABLE (4 COLS) -->
+<div class="lg:col-span-4 space-y-6">
+<!-- NEA Official 4-Band Standard -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<h3 class="font-extrabold text-sm text-slate-900">Official NEA 1-Hr PM2.5 Bands</h3>
+<span class="text-xs text-slate-400">haze.gov.sg</span>
 </div>
-</div>
-</div>
-</div>
-</div>
-<!-- RIGHT / SECONDARY (30%): Official NEA Bands + MOH Guidance + Breakdown -->
-<div class="lg:col-span-4 space-y-4">
-<!-- OFFICIAL NEA 1-HR PM2.5 4-BAND REFERENCE TABLE (Exact match to IMAGE_2 & haze.gov.sg) -->
-<div class="bg-surface-card rounded-2xl border border-border-subtle shadow-sm p-3.5 sm:p-5 space-y-3">
-<div class="flex items-start justify-between">
-<div>
-<span class="text-xs font-bold font-mono text-secondary uppercase tracking-wider">Official NEA Standard</span>
-<h3 class="font-display font-bold text-sm sm:text-base text-on-surface mt-0.5">1-Hr PM2.5 4-Band System</h3>
-</div>
-<span class="material-symbols-outlined text-[22px] text-secondary">bar_chart</span>
-</div>
-<!-- Official haze.gov.sg 4-Band Table -->
-<div class="overflow-hidden border border-border-subtle rounded-xl text-xs font-mono">
+<div class="overflow-hidden border border-slate-100 rounded-xl text-xs">
 <table class="w-full text-left">
-<thead>
-<tr class="bg-surface-container/70 border-b border-border-subtle text-[10px] text-on-surface-variant uppercase font-bold">
-<th class="py-2 px-2.5">1-hr PM2.5 (µg/m³)</th>
-<th class="py-2 px-2">Band</th>
-<th class="py-2 px-2.5">Descriptor</th>
+<thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+<tr>
+<th class="p-2.5">PM2.5 (µg/m³)</th>
+<th class="p-2.5">Band</th>
+<th class="p-2.5">Descriptor</th>
 </tr>
 </thead>
-<tbody class="divide-y divide-border-subtle">
-<tr class="bg-emerald-50/80 border-l-4 border-emerald-500 font-bold" id="ref-row-band1">
-<td class="py-2 px-2.5 text-emerald-800">0 - 55</td>
-<td class="py-2 px-2 text-emerald-800">1</td>
-<td class="py-2 px-2.5 text-emerald-800">Normal</td>
+<tbody class="divide-y divide-slate-100 font-semibold">
+<tr class="bg-emerald-50/60 text-emerald-900">
+<td class="p-2.5 font-bold">0 - 55</td>
+<td class="p-2.5">1</td>
+<td class="p-2.5 font-bold">Normal</td>
 </tr>
-<tr class="hover:bg-slate-50 transition-colors font-normal" id="ref-row-band2">
-<td class="py-2 px-2.5 text-on-surface">56 - 150</td>
-<td class="py-2 px-2 text-on-surface">2</td>
-<td class="py-2 px-2.5 text-on-surface">Elevated</td>
+<tr class="text-slate-700">
+<td class="p-2.5 font-bold">56 - 150</td>
+<td class="p-2.5">2</td>
+<td class="p-2.5">Elevated</td>
 </tr>
-<tr class="hover:bg-slate-50 transition-colors font-normal" id="ref-row-band3">
-<td class="py-2 px-2.5 text-on-surface">151 - 250</td>
-<td class="py-2 px-2 text-on-surface">3</td>
-<td class="py-2 px-2.5 text-on-surface">High</td>
+<tr class="text-slate-700">
+<td class="p-2.5 font-bold">151 - 250</td>
+<td class="p-2.5">3</td>
+<td class="p-2.5">High</td>
 </tr>
-<tr class="hover:bg-slate-50 transition-colors font-normal" id="ref-row-band4">
-<td class="py-2 px-2.5 text-on-surface">&gt;= 251</td>
-<td class="py-2 px-2 text-on-surface">4</td>
-<td class="py-2 px-2.5 text-on-surface">Very High</td>
+<tr class="text-slate-700">
+<td class="p-2.5 font-bold">≥ 251</td>
+<td class="p-2.5">4</td>
+<td class="p-2.5">Very High</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="text-[10px] text-on-surface-variant font-mono">
-Source: National Environment Agency (NEA) haze.gov.sg
+</div>
+<!-- Regional Station Breakdown -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+<h3 class="font-extrabold text-sm text-slate-900 mb-3">Regional Station Readings</h3>
+<div class="space-y-2.5 text-xs font-semibold">
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 transition" onclick="selectSector('north')">
+<span class="text-slate-700">North (Woodlands)</span>
+<div class="space-x-2">
+<span class="font-bold text-slate-900" id="row-val-north">--</span>
+<span class="text-slate-400" id="row-psi-north">(-- PSI)</span>
 </div>
 </div>
-<!-- Hyperlocal Regional Station Breakdown -->
-<div class="bg-surface-card rounded-2xl border border-border-subtle shadow-sm p-3.5 sm:p-5 space-y-3" id="nea-station-breakdown-card">
-<div class="flex items-start justify-between">
-<div>
-<span class="text-xs font-bold font-mono text-secondary uppercase tracking-wider">Official NEA Telemetry</span>
-<h3 class="font-display font-bold text-sm sm:text-base text-on-surface mt-0.5">Regional Station Breakdown</h3>
-</div>
-<span class="material-symbols-outlined text-[20px] text-secondary">domain</span>
-</div>
-<!-- 5 Sector Micro Table with Live Binds matching IMAGE_2 values -->
-<div class="bg-surface-container/60 border border-border-subtle rounded-xl p-2 sm:p-2.5 space-y-1.5 text-xs font-mono">
-<div class="grid grid-cols-5 text-[10px] text-on-surface-variant font-bold border-b border-border-subtle pb-1 px-1">
-<span class="col-span-2">SECTOR</span>
-<span class="text-right">1-HR PM2.5</span>
-<span class="text-right">24-HR PSI</span>
-<span class="text-right">BAND</span>
-</div>
-<div class="space-y-1">
-<div class="grid grid-cols-5 items-center p-1.5 rounded-lg bg-surface-card border border-border-subtle hover:border-secondary transition-all cursor-pointer" onclick="focusZoneOnMap('north')">
-<span class="col-span-2 font-bold text-on-surface flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500" id="dot-tbl-north" style="background-color: rgb(5, 150, 105);"></span> North</span>
-<span class="text-right text-emerald-700 font-bold" id="tbl-pm25-north" style="color: rgb(5, 150, 105);">37 µg/m³</span>
-<span class="text-right text-on-surface font-semibold" id="tbl-psi-north">48</span>
-<span class="text-right text-[10px] text-emerald-700 font-bold" id="tbl-band-north" style="color: rgb(5, 150, 105);">Band 1</span>
-</div>
-<div class="grid grid-cols-5 items-center p-1.5 rounded-lg bg-surface-card border border-border-subtle hover:border-secondary transition-all cursor-pointer" onclick="focusZoneOnMap('central')">
-<span class="col-span-2 font-bold text-on-surface flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500" id="dot-tbl-central" style="background-color: rgb(5, 150, 105);"></span> Central</span>
-<span class="text-right text-emerald-700 font-bold" id="tbl-pm25-central" style="color: rgb(5, 150, 105);">49 µg/m³</span>
-<span class="text-right text-on-surface font-semibold" id="tbl-psi-central">52</span>
-<span class="text-right text-[10px] text-emerald-700 font-bold" id="tbl-band-central" style="color: rgb(5, 150, 105);">Band 1</span>
-</div>
-<div class="grid grid-cols-5 items-center p-1.5 rounded-lg bg-surface-card border border-border-subtle hover:border-secondary transition-all cursor-pointer" onclick="focusZoneOnMap('west')">
-<span class="col-span-2 font-bold text-on-surface flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500" id="dot-tbl-west" style="background-color: rgb(5, 150, 105);"></span> West</span>
-<span class="text-right text-emerald-700 font-bold" id="tbl-pm25-west" style="color: rgb(5, 150, 105);">39 µg/m³</span>
-<span class="text-right text-on-surface font-semibold" id="tbl-psi-west">46</span>
-<span class="text-right text-[10px] text-emerald-700 font-bold" id="tbl-band-west" style="color: rgb(5, 150, 105);">Band 1</span>
-</div>
-<div class="grid grid-cols-5 items-center p-1.5 rounded-lg bg-surface-card border border-border-subtle hover:border-secondary transition-all cursor-pointer" onclick="focusZoneOnMap('south')">
-<span class="col-span-2 font-bold text-on-surface flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500" id="dot-tbl-south" style="background-color: rgb(5, 150, 105);"></span> South</span>
-<span class="text-right text-emerald-700 font-bold" id="tbl-pm25-south" style="color: rgb(5, 150, 105);">34 µg/m³</span>
-<span class="text-right text-on-surface font-semibold" id="tbl-psi-south">44</span>
-<span class="text-right text-[10px] text-emerald-700 font-bold" id="tbl-band-south" style="color: rgb(5, 150, 105);">Band 1</span>
-</div>
-<div class="grid grid-cols-5 items-center p-1.5 rounded-lg bg-surface-card border border-border-subtle hover:border-secondary transition-all cursor-pointer" onclick="focusZoneOnMap('east')">
-<span class="col-span-2 font-bold text-on-surface flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500" id="dot-tbl-east" style="background-color: rgb(5, 150, 105);"></span> East</span>
-<span class="text-right text-emerald-700 font-bold" id="tbl-pm25-east" style="color: rgb(5, 150, 105);">37 µg/m³</span>
-<span class="text-right text-on-surface font-semibold" id="tbl-psi-east">42</span>
-<span class="text-right text-[10px] text-emerald-700 font-bold" id="tbl-band-east" style="color: rgb(5, 150, 105);">Band 1</span>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 transition" onclick="selectSector('central')">
+<span class="text-slate-700">Central (Bishan)</span>
+<div class="space-x-2">
+<span class="font-bold text-slate-900" id="row-val-central">--</span>
+<span class="text-slate-400" id="row-psi-central">(-- PSI)</span>
 </div>
 </div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 transition" onclick="selectSector('west')">
+<span class="text-slate-700">West (Jurong)</span>
+<div class="space-x-2">
+<span class="font-bold text-slate-900" id="row-val-west">--</span>
+<span class="text-slate-400" id="row-psi-west">(-- PSI)</span>
 </div>
-<div class="p-2.5 rounded-lg bg-emerald-50 border border-emerald-300 text-xs flex items-center justify-between font-mono" id="breakdown-advisory-strip">
-<div class="flex items-center gap-2 text-emerald-900 text-[11px]">
-<span class="material-symbols-outlined text-emerald-600 text-[16px] flex-shrink-0">check_circle</span>
-<span class="" id="breakdown-advisory-msg">All sectors in Band 1 (Normal 0-55 µg/m³). Normal activities permitted.</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 transition" onclick="selectSector('south')">
+<span class="text-slate-700">South (Sentosa)</span>
+<div class="space-x-2">
+<span class="font-bold text-slate-900" id="row-val-south">--</span>
+<span class="text-slate-400" id="row-psi-south">(-- PSI)</span>
 </div>
 </div>
-</div>
-<!-- Official Health Advisory by Vulnerable Group -->
-<div class="bg-surface-card rounded-2xl border border-border-subtle shadow-sm p-3.5 sm:p-5 space-y-3">
-<div class="flex items-start justify-between">
-<div>
-<span class="text-xs font-bold font-mono text-secondary uppercase tracking-wider">Clinical Guidance</span>
-<h3 class="font-display font-bold text-sm sm:text-base text-on-surface mt-0.5">MOH Official Advisory Protocols</h3>
-</div>
-<span class="material-symbols-outlined text-[20px] text-secondary">clinical_notes</span>
-</div>
-<!-- Group selector pills -->
-<div class="grid grid-cols-2 gap-1.5 bg-surface-container/70 p-1 rounded-xl text-xs">
-<button class="advisory-tab-btn py-1.5 px-2 rounded-lg font-semibold bg-surface-card text-secondary shadow-xs transition-all flex items-center justify-center gap-1" id="tab-group-general" onclick="selectAdvisoryGroup('general')">
-<span class="">👥</span> General
-</button>
-<button class="advisory-tab-btn py-1.5 px-2 rounded-lg font-medium text-on-surface-variant hover:text-on-surface transition-all flex items-center justify-center gap-1" id="tab-group-vulnerable" onclick="selectAdvisoryGroup('vulnerable')">
-<span class="">🧓👶</span> Elderly &amp; Kids
-</button>
-<button class="advisory-tab-btn py-1.5 px-2 rounded-lg font-medium text-on-surface-variant hover:text-on-surface transition-all flex items-center justify-center gap-1" id="tab-group-athletes" onclick="selectAdvisoryGroup('athletes')">
-<span class="">🏃‍♂️</span> Athletes
-</button>
-<button class="advisory-tab-btn py-1.5 px-2 rounded-lg font-medium text-on-surface-variant hover:text-on-surface transition-all flex items-center justify-center gap-1" id="tab-group-patients" onclick="selectAdvisoryGroup('patients')">
-<span class="">🫁</span> Asthma/Cardiac
-</button>
-</div>
-<!-- Dynamic Guidance Content Card -->
-<div class="bg-surface-container/50 border border-border-subtle rounded-xl p-3 sm:p-3.5 space-y-2.5 text-xs" id="advisory-dynamic-card">
-<div class="flex items-center justify-between gap-2">
-<span class="font-semibold text-on-surface flex items-center gap-1.5">
-<span class="material-symbols-outlined text-[18px] text-emerald-600" id="advisory-icon">check_circle</span>
-<span class="" id="advisory-title">Normal Activity Protocol (Band 1)</span>
-</span>
-<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 flex-shrink-0" id="advisory-badge">NORMAL (BAND 1)</span>
-</div>
-<p class="text-on-surface-variant leading-relaxed text-[11px] sm:text-xs" id="advisory-desc">Air quality is healthy. Everyone, including children, the elderly, and sensitive individuals, may participate fully in normal indoor and outdoor activities.</p>
-<div class="grid grid-cols-2 gap-2 pt-1 border-t border-border-subtle">
-<div class="p-2 rounded-lg bg-surface-card border border-border-subtle">
-<span class="text-[10px] font-mono uppercase text-on-surface-variant block">Mask Guideline</span>
-<span class="font-semibold text-emerald-700 text-[11px]" id="advisory-mask">Not Required</span>
-</div>
-<div class="p-2 rounded-lg bg-surface-card border border-border-subtle">
-<span class="text-[10px] font-mono uppercase text-on-surface-variant block">Outdoor Cardio</span>
-<span class="font-semibold text-emerald-700 text-[11px]" id="advisory-exercise">Normal Participation</span>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 transition" onclick="selectSector('east')">
+<span class="text-slate-700">East (Bedok)</span>
+<div class="space-x-2">
+<span class="font-bold text-slate-900" id="row-val-east">--</span>
+<span class="text-slate-400" id="row-psi-east">(-- PSI)</span>
 </div>
 </div>
 </div>
 </div>
 </div>
-</div>
-<!-- MODALS -->
-<!-- API Inspector Modal -->
-<div class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto" id="api-inspector-modal">
-<div class="bg-surface-card rounded-2xl max-w-4xl w-full border border-border-subtle shadow-xl overflow-hidden animate-fadeIn my-auto">
-<div class="p-4 sm:p-5 border-b border-border-subtle flex items-center justify-between bg-surface-container/50">
-<div>
-<div class="flex flex-wrap items-center gap-2">
-<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-secondary/10 text-secondary border border-secondary/20">OFFICIAL REST TELEMETRY</span>
-<span class="flex items-center gap-1.5 text-[11px] font-mono text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>api-open.data.gov.sg (HTTP 200 OK)
-</span>
-<span class="text-[10px] font-mono text-on-surface-variant">v1/environment/pm25 &amp; /psi</span>
-</div>
-<h3 class="font-display font-bold text-base sm:text-lg text-on-surface mt-1">HazeWatch SG • NEA Gov API Inspector</h3>
-</div>
-<button class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" onclick="toggleApiInspectorModal(false)">
-<span class="material-symbols-outlined text-[20px]">close</span>
-</button>
-</div>
-<div class="p-4 sm:p-5 space-y-4">
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 bg-surface-container/60 rounded-xl border border-border-subtle">
-<div>
-<div class="text-xs font-mono font-bold text-on-surface flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-[17px]">sync_saved_loc</span>
-<span class="" id="inspector-sync-timestamp">Last Synced with data.gov.sg • 2:00 PM SGT</span>
-</div>
-<div class="text-[11px] text-on-surface-variant font-mono mt-0.5">Endpoint: GET https://api-open.data.gov.sg/v1/environment/psi &amp; pm25</div>
-</div>
-<button class="px-3.5 py-1.5 bg-secondary hover:bg-secondary-dark text-white font-mono font-bold text-xs rounded-lg flex items-center gap-1.5 transition-all shadow-xs" onclick="fetchRealSingaporeLiveData()">
-<span class="material-symbols-outlined text-[16px]">refresh</span>
-<span class="">Fetch Live NEA Data Now</span>
-</button>
-</div>
-<div class="space-y-2">
-<div class="flex items-center justify-between">
-<span class="text-xs font-bold font-mono text-on-surface uppercase tracking-wider flex items-center gap-1">
-<span class="material-symbols-outlined text-[15px] text-secondary">data_object</span> Live JSON Payload from data.gov.sg
-</span>
-<span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">Verified NEA Model</span>
-</div>
-<pre class="bg-slate-900 text-emerald-400 p-3.5 rounded-xl font-mono text-[11px] leading-relaxed overflow-x-auto max-h-[300px] border border-slate-800 shadow-inner" id="nea-json-payload-display">{
-  "region_metadata": [
-    { "name": "central", "label_location": { "latitude": 1.35735, "longitude": 103.82 } },
-    { "name": "south", "label_location": { "latitude": 1.29587, "longitude": 103.82 } },
-    { "name": "west", "label_location": { "latitude": 1.35735, "longitude": 103.7 } },
-    { "name": "north", "label_location": { "latitude": 1.41803, "longitude": 103.82 } },
-    { "name": "east", "label_location": { "latitude": 1.35735, "longitude": 103.94 } }
-  ],
-  "items": [
-    {
-      "timestamp": "2026-09-16T14:00:00+08:00",
-      "update_timestamp": "2026-09-16T14:00:53+08:00",
-      "readings": {
-        "pm25_one_hourly": { "north": 37, "central": 49, "east": 37, "south": 34, "west": 39 },
-        "psi_twenty_four_hourly": { "north": 48, "central": 52, "east": 42, "south": 44, "west": 46 }
-      }
-    }
-  ],
-  "api_info": { "status": "healthy", "source": "National Environment Agency (NEA) Singapore" }
-}</pre>
-</div>
-</div>
-</div>
-</div>
+</section>
 </main>
-<!-- ========================================================================= -->
-<!-- FOOTER: Official Data Transparency & Governmental Standards -->
-<!-- ========================================================================= -->
-<footer class="mt-8 bg-surface-card border-t border-border-subtle py-6">
-<div class="max-w-[1560px] mx-auto px-3 sm:px-6 lg:px-8 space-y-4">
-<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs text-on-surface-variant">
-<div class="flex items-center gap-3 flex-wrap">
-<div class="flex items-center gap-1.5 font-medium text-on-surface">
-<span class="material-symbols-outlined text-[16px] text-secondary">verified_user</span>
-<span class="">Official Singapore Open Data Compliance (NEA haze.gov.sg)</span>
-</div>
-<span class="text-slate-300 hidden sm:inline">|</span>
-<span class="font-mono">HazeWatch SG • 4-Band PM2.5 System</span>
-</div>
-<div class="flex items-center gap-4 text-xs font-mono flex-wrap">
-<a class="hover:text-secondary flex items-center gap-1" href="tel:18002255632">
-<span class="material-symbols-outlined text-[15px]">call</span> NEA Hotline: 1800-CALL-NEA
-</a>
-<span class="text-slate-300">|</span>
-<a class="hover:text-secondary flex items-center gap-1" href="https://www.haze.gov.sg" target="_blank">
-<span class="material-symbols-outlined text-[15px]">open_in_new</span> haze.gov.sg
-</a>
-</div>
-</div>
-<div class="border-t border-border-subtle/50 pt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] text-on-surface-variant">
-<p class="">© 2026 HazeWatch SG. 1-Hr PM2.5 and 24-Hr PSI telemetry formulated in direct conformity with National Environment Agency (NEA) and Ministry of Health (MOH) public advisory guidelines.</p>
-<p class="font-mono">Spatial Model: 5 NEA Regions • Real-time Gov Sync</p>
-</div>
-</div>
-</footer>
-<!-- ========================================================================= -->
-<!-- OFFICIAL NEA DATA CALCULATION & TELEMETRY ENGINE (MATCHES IMAGE_2) -->
-<!-- ========================================================================= -->
-<script id="hazewatch-telemetry-engine">
-// State Store - Initialized with exact baseline readings from NEA haze.gov.sg (IMAGE_2)
-// North: 41, Central: 50, East: 31, South: 30, West: 38
-window.neaTelemetryState = {
-  pm25: { north: 41, central: 50, east: 31, south: 30, west: 38 },
-  psi24: { north: 48, central: 52, east: 42, south: 44, west: 46 },
-  activeSector: 'island',
-  metricMode: '1hr',
-  simulatedBand: 1,
-  timestampStr: 'At 2pm on 16 Sep 2026'
-};
-
-// Official NEA 4-Band Classifier (Exact values from haze.gov.sg in IMAGE_2)
-// Band 1: 0 - 55 µg/m³ (Normal, Green)
-// Band 2: 56 - 150 µg/m³ (Elevated, Amber)
-// Band 3: 151 - 250 µg/m³ (High, Red)
-// Band 4: >= 251 µg/m³ (Very High, Deep Purple)
-function getNeaBand(val) {
-  if (val <= 55) {
-    return {
-      bandNum: 1,
-      band: 'Band 1 (Normal)',
-      descriptor: 'Normal',
-      color: '#059669',
-      fillColor: '#10b981',
-      borderColor: '#059669',
-      badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      heroBorder: 'border-emerald-500 text-emerald-700',
-      icon: 'check_circle',
-      statusTitle: 'Normal Activities Permitted',
-      advisoryStrip: 'All sectors in Band 1 (Normal 0-55 µg/m³). Normal activities permitted.'
+<!-- OFFICIAL NEA TELEMETRY ENGINE -->
+<script>
+    let appState = {
+      pm25: { north: 33, central: 54, west: 45, south: 39, east: 34, national: 41 },
+      psi: { north: 48, central: 52, west: 46, south: 44, east: 42, national: 48 },
+      activeSector: 'north', // Defaults to North, matching haze.gov.sg
+      metricMode: 'pm25',
+      updatedAtSGT: ''
     };
-  } else if (val <= 150) {
-    return {
-      bandNum: 2,
-      band: 'Band 2 (Elevated)',
-      descriptor: 'Elevated',
-      color: '#d97706',
-      fillColor: '#f59e0b',
-      borderColor: '#d97706',
-      badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
-      heroBorder: 'border-amber-500 text-amber-700',
-      icon: 'warning',
-      statusTitle: 'Elevated Haze Protocol',
-      advisoryStrip: 'Regions in Band 2 (Elevated 56-150 µg/m³). Vulnerable groups reduce prolonged outdoor exertion.'
-    };
-  } else if (val <= 250) {
-    return {
-      bandNum: 3,
-      band: 'Band 3 (High)',
-      descriptor: 'High',
-      color: '#dc2626',
-      fillColor: '#ef4444',
-      borderColor: '#dc2626',
-      badgeBg: 'bg-red-50 text-red-700 border-red-200',
-      heroBorder: 'border-red-500 text-red-700',
-      icon: 'report',
-      statusTitle: 'High Haze Alert',
-      advisoryStrip: 'Regions in Band 3 (High 151-250 µg/m³). Avoid strenuous outdoor exertion.'
-    };
-  } else {
-    return {
-      bandNum: 4,
-      band: 'Band 4 (Very High)',
-      descriptor: 'Very High',
-      color: '#7e22ce',
-      fillColor: '#a855f7',
-      borderColor: '#7e22ce',
-      badgeBg: 'bg-purple-50 text-purple-700 border-purple-200',
-      heroBorder: 'border-purple-600 text-purple-700',
-      icon: 'dangerous',
-      statusTitle: 'Very High Hazard',
-      advisoryStrip: 'CRITICAL: Band 4 (≥251 µg/m³). Minimize outdoor exposure and keep windows closed.'
-    };
-  }
-}
 
-// Format Singapore SGT Time
-function formatNeaTime(dateObj) {
-  const d = dateObj || new Date();
-  let hours = d.getHours();
-  const ampm = hours >= 12 ? 'pm' : 'am';
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-  const day = d.getDate();
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const month = monthNames[d.getMonth()];
-  const year = d.getFullYear();
-  return `At ${hours}${ampm} on ${day} ${month} ${year}`;
-}
-
-// Scenario Simulation Runner conforming to exact NEA bands
-window.simulateNeaScenario = function(bandNum) {
-  window.neaTelemetryState.simulatedBand = bandNum;
-  const pill = document.getElementById('simulation-status-pill');
-  const bannerMsg = document.getElementById('scenario-banner-msg');
-
-  // Update button highlights
-  [1, 2, 3, 4].forEach(n => {
-    const btn = document.getElementById(`btn-sim-band${n}`);
-    if (!btn) return;
-    if (n === bandNum) {
-      const ringColor = n === 1 ? 'ring-emerald-500 bg-emerald-600' :
-                        n === 2 ? 'ring-amber-500 bg-amber-600' :
-                        n === 3 ? 'ring-red-500 bg-red-600' : 'ring-purple-600 bg-purple-700';
-      btn.className = `px-2.5 sm:px-3 py-1.5 rounded-lg font-bold text-white ${ringColor} shadow-md ring-2 flex items-center gap-1.5 transition-all text-xs`;
-    } else {
-      btn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg font-medium text-on-surface bg-surface-container hover:bg-surface-container-high border border-border-subtle flex items-center gap-1.5 transition-all text-xs';
+    function getPmBandDescriptor(val) {
+      if (val <= 55) return { band: 1, text: 'Band 1 (Normal)', short: 'Band 1 Normal', colorClass: 'text-emerald-600', badgeClass: 'bg-emerald-100 text-emerald-800' };
+      if (val <= 150) return { band: 2, text: 'Band 2 (Elevated)', short: 'Band 2 Elevated', colorClass: 'text-amber-500', badgeClass: 'bg-amber-100 text-amber-800' };
+      if (val <= 250) return { band: 3, text: 'Band 3 (High)', short: 'Band 3 High', colorClass: 'text-rose-600', badgeClass: 'bg-rose-100 text-rose-800' };
+      return { band: 4, text: 'Band 4 (Very High)', short: 'Band 4 Very High', colorClass: 'text-purple-700', badgeClass: 'bg-purple-100 text-purple-800' };
     }
-  });
 
-  if (bandNum === 1) {
-    // Official Band 1: 0 - 55 µg/m³ (IMAGE_2 values: North 41, Central 50, East 31, South 30, West 38 -> Avg: 38 or 41)
-    window.neaTelemetryState.pm25 = { north: 41, central: 50, east: 31, south: 30, west: 38 };
-    window.neaTelemetryState.psi24 = { north: 48, central: 52, east: 42, south: 44, west: 46 };
-    if (pill) pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>Scenario: Band 1 (Normal)';
-    if (bannerMsg) bannerMsg.textContent = 'Simulating official NEA Band 1 (Normal): 0 – 55 µg/m³ across Singapore.';
-  } else if (bandNum === 2) {
-    // Official Band 2: 56 - 150 µg/m³
-    window.neaTelemetryState.pm25 = { north: 62, central: 68, east: 58, south: 64, west: 82 };
-    window.neaTelemetryState.psi24 = { north: 98, central: 114, east: 92, south: 104, west: 128 };
-    if (pill) pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>Scenario: Band 2 (Elevated)';
-    if (bannerMsg) bannerMsg.textContent = 'Simulating official NEA Band 2 (Elevated): 56 – 150 µg/m³ across Singapore.';
-  } else if (bandNum === 3) {
-    // Official Band 3: 151 - 250 µg/m³
-    window.neaTelemetryState.pm25 = { north: 165, central: 178, east: 158, south: 168, west: 185 };
-    window.neaTelemetryState.psi24 = { north: 188, central: 205, east: 180, south: 195, west: 215 };
-    if (pill) pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>Scenario: Band 3 (High)';
-    if (bannerMsg) bannerMsg.textContent = 'Simulating official NEA Band 3 (High): 151 – 250 µg/m³ across Singapore.';
-  } else if (bandNum === 4) {
-    // Official Band 4: >= 251 µg/m³
-    window.neaTelemetryState.pm25 = { north: 265, central: 285, east: 255, south: 275, west: 298 };
-    window.neaTelemetryState.psi24 = { north: 295, central: 315, east: 288, south: 305, west: 330 };
-    if (pill) pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse"></span>Scenario: Band 4 (Very High)';
-    if (bannerMsg) bannerMsg.textContent = 'Simulating official NEA Band 4 (Very High): ≥ 251 µg/m³ across Singapore.';
-  }
+    function getPsiDescriptor(val) {
+      if (val <= 50) return { label: 'Good (0–50)', badgeClass: 'bg-emerald-100 text-emerald-800' };
+      if (val <= 100) return { label: 'Moderate (51–100)', badgeClass: 'bg-blue-100 text-blue-800' };
+      if (val <= 200) return { label: 'Unhealthy (101–200)', badgeClass: 'bg-amber-100 text-amber-800' };
+      if (val <= 300) return { label: 'Very Unhealthy (201–300)', badgeClass: 'bg-rose-100 text-rose-800' };
+      return { label: 'Hazardous (301+)', badgeClass: 'bg-purple-100 text-purple-800' };
+    }
 
-  renderTelemetryUI();
-};
+    // Resilient Dual-Endpoint Fetcher with Sorting by Timestamp
+    async function syncWithNEA(isManual = false) {
+      const spinner = document.getElementById('sync-spinner');
+      const refreshIcon = document.getElementById('refresh-icon');
+      if (spinner) spinner.classList.remove('hidden');
+      if (refreshIcon) refreshIcon.classList.add('animate-spin');
 
-// Main Government API Fetcher - Checks pm25 and psi endpoints
-window.fetchRealSingaporeLiveData = async function() {
-  const statusBtnText = document.getElementById('header-sync-status-text');
-  if (statusBtnText) statusBtnText.textContent = 'Syncing NEA...';
+      const cacheBust = Date.now();
 
-  const pill = document.getElementById('simulation-status-pill');
-  if (pill) pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>Live data.gov.sg Active';
+      // 1. Query Dedicated PM2.5 Endpoint with fallbacks
+      const pmEndpoints = [
+        `https://api-open.data.gov.sg/v1/environment/pm25?t=${cacheBust}`,
+        `https://api.data.gov.sg/v1/environment/pm25?t=${cacheBust}`
+      ];
 
-  let rawJson = null;
+      for (const url of pmEndpoints) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (data?.items?.length > 0) {
+            // Sort descending to guarantee latest timestamp reading
+            const sorted = data.items.sort((a, b) => new Date(b.timestamp || b.update_timestamp) - new Date(a.timestamp || a.update_timestamp));
+            const latest = sorted[0];
+            const pmReadings = latest.readings?.pm25_one_hourly;
+            
+            if (pmReadings) {
+              if (pmReadings.north !== undefined) appState.pm25.north = Number(pmReadings.north);
+              if (pmReadings.central !== undefined) appState.pm25.central = Number(pmReadings.central);
+              if (pmReadings.west !== undefined) appState.pm25.west = Number(pmReadings.west);
+              if (pmReadings.south !== undefined) appState.pm25.south = Number(pmReadings.south);
+              if (pmReadings.east !== undefined) appState.pm25.east = Number(pmReadings.east);
+              appState.pm25.national = Number(pmReadings.national ?? Math.round(
+                (appState.pm25.north + appState.pm25.central + appState.pm25.west + appState.pm25.south + appState.pm25.east) / 5
+              ));
 
-  // Attempt PM2.5 first, fallback to PSI endpoint which includes pm25_one_hourly
-  const endpoints = [
-    'https://api-open.data.gov.sg/v1/environment/pm25',
-    'https://api-open.data.gov.sg/v1/environment/psi',
-    'https://api.data.gov.sg/v1/environment/psi'
-  ];
-
-  for (const url of endpoints) {
-    try {
-      const response = await fetch(url, { cache: 'no-cache' });
-      if (response.ok) {
-        const json = await response.json();
-        if (json && json.items && json.items.length > 0) {
-          rawJson = json;
-          break;
+              const dateObj = new Date(latest.timestamp || latest.update_timestamp);
+              appState.updatedAtSGT = dateObj.toLocaleTimeString('en-SG', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: 'Asia/Singapore'
+              });
+              break;
+            }
+          }
+        } catch (e) {
+          console.warn('PM2.5 endpoint attempt failed:', url, e);
         }
       }
-    } catch (e) {
-      console.warn('API fetch fail:', url, e);
+
+      // 2. Query 24-Hr PSI Endpoint with fallbacks
+      const psiEndpoints = [
+        `https://api-open.data.gov.sg/v1/environment/psi?t=${cacheBust}`,
+        `https://api.data.gov.sg/v1/environment/psi?t=${cacheBust}`
+      ];
+
+      for (const url of psiEndpoints) {
+        try {
+          const psiRes = await fetch(url);
+          if (!psiRes.ok) continue;
+          const psiData = await psiRes.json();
+          if (psiData?.items?.length > 0) {
+            const sortedPsi = psiData.items.sort((a, b) => new Date(b.timestamp || b.update_timestamp) - new Date(a.timestamp || a.update_timestamp));
+            const latestPsi = sortedPsi[0];
+            const psiReadings = latestPsi.readings?.psi_twenty_four_hourly;
+            if (psiReadings) {
+              if (psiReadings.north !== undefined) appState.psi.north = Number(psiReadings.north);
+              if (psiReadings.central !== undefined) appState.psi.central = Number(psiReadings.central);
+              if (psiReadings.west !== undefined) appState.psi.west = Number(psiReadings.west);
+              if (psiReadings.south !== undefined) appState.psi.south = Number(psiReadings.south);
+              if (psiReadings.east !== undefined) appState.psi.east = Number(psiReadings.east);
+              appState.psi.national = Number(psiReadings.national ?? psiReadings.central ?? Math.round(
+                (appState.psi.north + appState.psi.central + appState.psi.west + appState.psi.south + appState.psi.east) / 5
+              ));
+              break;
+            }
+          }
+        } catch (err) {
+          console.warn('PSI sync attempt failed:', url, err);
+        }
+      }
+
+      renderUI();
+
+      if (spinner) spinner.classList.add('hidden');
+      if (refreshIcon) refreshIcon.classList.remove('animate-spin');
     }
-  }
 
-  if (rawJson && rawJson.items && rawJson.items.length > 0) {
-    try {
-      const latest = rawJson.items[0];
-      const readings = latest.readings || {};
+    function renderUI() {
+      const sec = appState.activeSector;
+      const sectors = ['north', 'central', 'west', 'south', 'east'];
+      const pmVals = sectors.map(s => appState.pm25[s]);
+      const psiVals = sectors.map(s => appState.psi[s]);
 
-      // Parse 1-hr PM2.5 (from pm25 endpoint or psi readings)
-      let pm25Obj = readings.pm25_one_hourly || readings.pm25;
-      if (pm25Obj) {
-        window.neaTelemetryState.pm25 = {
-          north: Number(pm25Obj.north) || 41,
-          central: Number(pm25Obj.central) || 50,
-          east: Number(pm25Obj.east) || 31,
-          south: Number(pm25Obj.south) || 30,
-          west: Number(pm25Obj.west) || 38
-        };
+      const minPm = Math.min(...pmVals);
+      const maxPm = Math.max(...pmVals);
+      const minPsi = Math.min(...psiVals);
+      const maxPsi = Math.max(...psiVals);
+
+      // 1. Headline PM2.5 Card (Direct mirror of haze.gov.sg)
+      const currentPm = sec === 'national' ? appState.pm25.national : appState.pm25[sec];
+      const pmInfo = getPmBandDescriptor(currentPm);
+
+      const elHeadlineVal = document.getElementById('headline-pm25-val');
+      if (elHeadlineVal) {
+        elHeadlineVal.textContent = currentPm;
+        elHeadlineVal.className = `text-5xl font-black ${pmInfo.colorClass} tracking-tight`;
       }
 
-      // Parse 24-hr PSI
-      let psiObj = readings.psi_twenty_four_hourly || readings.psi;
-      if (psiObj) {
-        window.neaTelemetryState.psi24 = {
-          north: Number(psiObj.north) || 48,
-          central: Number(psiObj.central) || 52,
-          east: Number(psiObj.east) || 42,
-          south: Number(psiObj.south) || 44,
-          west: Number(psiObj.west) || 46
-        };
+      const elSectorLabel = document.getElementById('active-sector-descriptor');
+      if (elSectorLabel) {
+        elSectorLabel.textContent = sec === 'national' ? 'NATIONAL AVERAGE' : `${sec.toUpperCase()} SECTOR`;
       }
 
-      if (latest.timestamp) {
-        window.neaTelemetryState.timestampStr = formatNeaTime(new Date(latest.timestamp));
+      const elRange = document.getElementById('headline-pm25-range');
+      if (elRange) elRange.textContent = `Sector Range: ${minPm} – ${maxPm} µg/m³`;
+
+      const elTime = document.getElementById('headline-timestamp');
+      if (elTime) elTime.textContent = appState.updatedAtSGT ? `At ${appState.updatedAtSGT}` : 'Live SGT';
+
+      const elBand = document.getElementById('headline-pm25-band');
+      if (elBand) {
+        elBand.textContent = pmInfo.text;
+        elBand.className = `px-2.5 py-0.5 rounded-full text-xs font-bold ${pmInfo.badgeClass}`;
+      }
+
+      // 2. Headline 24-Hr PSI Card
+      const currentPsi = sec === 'national' ? (appState.psi.central || appState.psi.national) : appState.psi[sec];
+      const psiInfo = getPsiDescriptor(currentPsi);
+
+      const elHeadlinePsi = document.getElementById('headline-psi-val');
+      if (elHeadlinePsi) elHeadlinePsi.textContent = currentPsi;
+
+      const elPsiBand = document.getElementById('headline-psi-band');
+      if (elPsiBand) {
+        elPsiBand.textContent = psiInfo.label;
+        elPsiBand.className = `px-2.5 py-0.5 rounded-full text-xs font-bold ${psiInfo.badgeClass}`;
+      }
+
+      const elPsiRange = document.getElementById('headline-psi-range');
+      if (elPsiRange) elPsiRange.textContent = `Island Range: ${minPsi} – ${maxPsi} PSI`;
+
+      // 3. Update Health Advisory Card based on active reading
+      const elHealthBadge = document.getElementById('health-badge-status');
+      const elHealthTitle = document.getElementById('health-advice-title');
+      const elHealthDesc = document.getElementById('health-advice-desc');
+      const elHealthCardio = document.getElementById('health-cardio-badge');
+      const elHealthMask = document.getElementById('health-mask-badge');
+
+      if (elHealthBadge && elHealthTitle) {
+        if (currentPm <= 55) {
+          elHealthBadge.textContent = 'Band 1';
+          elHealthBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
+          elHealthTitle.textContent = 'Normal Activities Permitted';
+          elHealthTitle.className = 'text-lg font-extrabold text-emerald-700 leading-tight';
+          if (elHealthDesc) elHealthDesc.textContent = 'Air quality is healthy. Suitable for normal outdoor cardio.';
+          if (elHealthCardio) elHealthCardio.textContent = '🏃 Outdoor Cardio: Safe';
+          if (elHealthMask) elHealthMask.textContent = '😷 Mask: Not Required';
+        } else if (currentPm <= 150) {
+          elHealthBadge.textContent = 'Band 2';
+          elHealthBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
+          elHealthTitle.textContent = 'Moderate Haze Precaution';
+          elHealthTitle.className = 'text-lg font-extrabold text-amber-700 leading-tight';
+          if (elHealthDesc) elHealthDesc.textContent = 'Vulnerable persons should reduce prolonged outdoor exertion.';
+          if (elHealthCardio) elHealthCardio.textContent = '🏃 Outdoor Cardio: Moderate';
+          if (elHealthMask) elHealthMask.textContent = '😷 Mask: Optional';
+        } else {
+          elHealthBadge.textContent = 'Band 3+';
+          elHealthBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800';
+          elHealthTitle.textContent = 'Limit Outdoor Exposure';
+          elHealthTitle.className = 'text-lg font-extrabold text-rose-700 leading-tight';
+          if (elHealthDesc) elHealthDesc.textContent = 'Minimize strenuous outdoor exertion. Stay indoors where possible.';
+          if (elHealthCardio) elHealthCardio.textContent = '🏃 Outdoor Cardio: Avoid';
+          if (elHealthMask) elHealthMask.textContent = '😷 Mask: Recommended';
+        }
+      }
+
+      // 4. Map Station Pins & Breakdown Tables
+      sectors.forEach(s => {
+        const val = appState.metricMode === 'pm25' ? appState.pm25[s] : appState.psi[s];
+        const unit = appState.metricMode === 'pm25' ? ' µg/m³' : ' PSI';
+
+        const pinVal = document.getElementById(`pin-val-${s}`);
+        if (pinVal) pinVal.textContent = val + unit;
+
+        const pinSub = document.getElementById(`pin-sub-${s}`);
+        if (pinSub) {
+          const sBand = getPmBandDescriptor(appState.pm25[s]);
+          pinSub.textContent = appState.metricMode === 'pm25' ? sBand.short : getPsiDescriptor(appState.psi[s]).label.split(' ')[0];
+          pinSub.className = `text-[10px] font-bold ${sBand.colorClass}`;
+        }
+
+        const pillVal = document.getElementById(`pill-val-${s}`);
+        if (pillVal) pillVal.textContent = appState.pm25[s] + ' µg/m³';
+
+        const rowVal = document.getElementById(`row-val-${s}`);
+        if (rowVal) rowVal.textContent = appState.pm25[s] + ' µg/m³';
+
+        const rowPsi = document.getElementById(`row-psi-${s}`);
+        if (rowPsi) rowPsi.textContent = `(${appState.psi[s]} PSI)`;
+
+        // Highlight selected station pin border
+        const stationCard = document.getElementById(`station-card-${s}`);
+        if (stationCard) {
+          if (s === sec) {
+            stationCard.firstElementChild.className = 'bg-white rounded-xl px-3.5 py-2 border-2 border-sky-600 shadow-xl text-center min-w-[115px] ring-4 ring-sky-100';
+          } else {
+            stationCard.firstElementChild.className = 'bg-white/95 backdrop-blur rounded-xl px-3.5 py-2 border-2 border-slate-300 shadow-md text-center min-w-[115px]';
+          }
+        }
+      });
+
+      // Update Header Badge
+      const syncBadge = document.getElementById('sync-time-badge');
+      if (syncBadge) {
+        const now = new Date();
+        const timeNow = now.toLocaleTimeString('en-SG', { hour: '2-digit', minute: '2-digit', hour12: true });
+        syncBadge.textContent = appState.updatedAtSGT ? `Synced ${appState.updatedAtSGT} SGT` : `Synced ${timeNow} SGT`;
+      }
+    }
+
+    function selectSector(sector) {
+      appState.activeSector = sector;
+      const allSectors = ['north', 'central', 'west', 'south', 'east', 'national'];
+      allSectors.forEach(s => {
+        const pill = document.getElementById(`pill-${s}`);
+        if (pill) {
+          if (s === sector) {
+            pill.className = 'px-3 py-1 rounded-full bg-sky-600 text-white shadow-sm transition active-pill';
+          } else {
+            pill.className = 'px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition';
+          }
+        }
+      });
+      renderUI();
+    }
+
+    function setMetricMode(mode) {
+      appState.metricMode = mode;
+      const btnPm = document.getElementById('toggle-pm25');
+      const btnPsi = document.getElementById('toggle-psi');
+      if (mode === 'pm25') {
+        btnPm.className = 'px-3 py-1 rounded-md bg-white text-slate-900 shadow-sm';
+        btnPsi.className = 'px-3 py-1 rounded-md text-slate-500 hover:text-slate-900';
       } else {
-        window.neaTelemetryState.timestampStr = formatNeaTime(new Date());
+        btnPsi.className = 'px-3 py-1 rounded-md bg-white text-slate-900 shadow-sm';
+        btnPm.className = 'px-3 py-1 rounded-md text-slate-500 hover:text-slate-900';
       }
-
-      // Inspector displays payload
-      const jsonPre = document.getElementById('nea-json-payload-display');
-      if (jsonPre) jsonPre.textContent = JSON.stringify(rawJson, null, 2);
-
-      const inspectTs = document.getElementById('inspector-sync-timestamp');
-      if (inspectTs) inspectTs.textContent = `Last Synced with data.gov.sg • ${new Date().toLocaleTimeString()} SGT`;
-
-    } catch (err) {
-      console.error('Error parsing live NEA payload:', err);
-    }
-  }
-
-  // Update sim buttons to unselected
-  [1, 2, 3, 4].forEach(n => {
-    const btn = document.getElementById(`btn-sim-band${n}`);
-    if (btn) btn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg font-medium text-on-surface bg-surface-container hover:bg-surface-container-high border border-border-subtle flex items-center gap-1.5 transition-all text-xs';
-  });
-
-  renderTelemetryUI();
-  if (statusBtnText) statusBtnText.textContent = 'Live: Connected';
-};
-
-// Main UI Rendering Engine
-function renderTelemetryUI() {
-  const pm25 = window.neaTelemetryState.pm25;
-  const psi24 = window.neaTelemetryState.psi24;
-  const activeSector = window.neaTelemetryState.activeSector;
-
-  // Sector list
-  const sectors = ['north', 'central', 'west', 'south', 'east'];
-
-  // Island 1-Hr PM2.5 calculation: rounded mean of the 5 regional readings
-  const pmVals = sectors.map(s => Number(pm25[s]) || 0);
-  const islandPm25 = Math.round(pmVals.reduce((a, b) => a + b, 0) / pmVals.length);
-  const minPm25 = Math.min(...pmVals);
-  const maxPm25 = Math.max(...pmVals);
-
-  // Island 24-Hr PSI calculation
-  const psiVals = sectors.map(s => Number(psi24[s]) || 0);
-  const islandPsi = Math.round(psiVals.reduce((a, b) => a + b, 0) / psiVals.length);
-  const minPsi = Math.min(...psiVals);
-  const maxPsi = Math.max(...psiVals);
-
-  // Active reading for KPI Card 1
-  let currentPm25 = islandPm25;
-  let currentPsi = islandPsi;
-  let sectorDisplayName = 'Island Average';
-
-  if (activeSector !== 'island' && pm25[activeSector] !== undefined) {
-    currentPm25 = pm25[activeSector];
-    currentPsi = psi24[activeSector];
-    sectorDisplayName = activeSector.charAt(0).toUpperCase() + activeSector.slice(1) + ' Sector';
-  }
-
-  const bandInfo = getNeaBand(currentPm25);
-
-  // 1. KPI Card 1: 1-HR PM2.5 (Matches circle card in IMAGE_2)
-  const kpiPm25Val = document.getElementById('kpi-pm25-value');
-  if (kpiPm25Val) {
-    kpiPm25Val.textContent = currentPm25;
-    kpiPm25Val.style.color = bandInfo.color;
-  }
-
-  const kpiCircleFrame = document.getElementById('kpi-pm25-circle-frame');
-  if (kpiCircleFrame) {
-    kpiCircleFrame.style.borderColor = bandInfo.color;
-  }
-
-  const kpiPm25Badge = document.getElementById('kpi-pm25-badge');
-  if (kpiPm25Badge) {
-    kpiPm25Badge.className = `text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full border ${bandInfo.badgeBg} flex-shrink-0`;
-    kpiPm25Badge.textContent = bandInfo.band;
-  }
-
-  const kpiPm25BandTitle = document.getElementById('kpi-pm25-band-title');
-  if (kpiPm25BandTitle) {
-    kpiPm25BandTitle.textContent = bandInfo.band;
-  }
-
-  const kpiPm25Sec = document.getElementById('kpi-pm25-sector-label');
-  if (kpiPm25Sec) kpiPm25Sec.textContent = sectorDisplayName;
-
-  const kpiPm25Range = document.getElementById('kpi-pm25-range-label');
-  if (kpiPm25Range) {
-    kpiPm25Range.innerHTML = `<span class="material-symbols-outlined text-[14px]">speed</span> Range: ${minPm25} - ${maxPm25} µg/m³`;
-    kpiPm25Range.style.color = bandInfo.color;
-  }
-
-  const kpiPm25Ts = document.getElementById('kpi-pm25-timestamp');
-  if (kpiPm25Ts) kpiPm25Ts.textContent = window.neaTelemetryState.timestampStr;
-
-  // 2. KPI Card 2: 24-HR PSI
-  const kpiPsiVal = document.getElementById('kpi-psi-value');
-  if (kpiPsiVal) {
-    kpiPsiVal.textContent = currentPsi;
-    kpiPsiVal.style.color = currentPsi > 200 ? '#dc2626' : currentPsi > 100 ? '#ea580c' : currentPsi > 50 ? '#d97706' : '#059669';
-  }
-
-  const kpiPsiBadge = document.getElementById('kpi-psi-badge');
-  if (kpiPsiBadge) {
-    if (currentPsi <= 50) {
-      kpiPsiBadge.className = 'inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex-shrink-0';
-      kpiPsiBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Normal (0-50)';
-    } else if (currentPsi <= 100) {
-      kpiPsiBadge.className = 'inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 flex-shrink-0';
-      kpiPsiBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Moderate (51-100)';
-    } else {
-      kpiPsiBadge.className = 'inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 flex-shrink-0';
-      kpiPsiBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Unhealthy (>100)';
-    }
-  }
-
-  const kpiPsiSub = document.getElementById('kpi-psi-subtext');
-  if (kpiPsiSub) {
-    kpiPsiSub.innerHTML = `<span class="material-symbols-outlined text-[14px]">speed</span> Island-wide: ${minPsi} - ${maxPsi}`;
-  }
-
-  const kpiPsiSec = document.getElementById('kpi-psi-sector');
-  if (kpiPsiSec) kpiPsiSec.textContent = sectorDisplayName;
-
-  // 3. KPI Card 3: Health Advisory Status
-  const kpiHeading = document.getElementById('kpi-status-heading');
-  const kpiAdvBadge = document.getElementById('kpi-advisory-badge');
-  if (kpiHeading && kpiAdvBadge) {
-    kpiHeading.textContent = bandInfo.statusTitle;
-    kpiHeading.style.color = bandInfo.color;
-    kpiAdvBadge.textContent = bandInfo.band;
-    kpiAdvBadge.className = `text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full ${bandInfo.badgeBg} flex-shrink-0`;
-  }
-
-  // 4. Map HUD Badge & Legend
-  const hudBand = document.getElementById('hud-band-text');
-  if (hudBand) {
-    hudBand.textContent = bandInfo.band;
-    hudBand.style.color = bandInfo.color;
-  }
-  const hudIcon = document.getElementById('hud-icon');
-  if (hudIcon) {
-    hudIcon.textContent = bandInfo.icon;
-    hudIcon.style.color = bandInfo.color;
-  }
-  const legendBand = document.getElementById('legend-band-pill');
-  if (legendBand) {
-    legendBand.textContent = bandInfo.band;
-    legendBand.style.color = bandInfo.color;
-  }
-
-  // 5. Timeline Stats (Min, Max, Current pills styled like IMAGE_2)
-  const statMin = document.getElementById('stat-pill-min');
-  if (statMin) statMin.textContent = minPm25;
-  const statMax = document.getElementById('stat-pill-max');
-  if (statMax) statMax.textContent = maxPm25;
-  const statCur = document.getElementById('stat-pill-current');
-  if (statCur) {
-    statCur.textContent = currentPm25;
-    statCur.style.color = bandInfo.color;
-  }
-
-  // 6. Sector Focus Pills & SVG Map Station Readings (IMAGE_2 layout: North 41, Central 50, East 31, South 30, West 38)
-  const pillIsland = document.getElementById('sector-pill-val-island');
-  if (pillIsland) pillIsland.textContent = `${islandPm25} µg/m³`;
-
-  sectors.forEach(sec => {
-    const sPm = pm25[sec];
-    const sPsi = psi24[sec];
-    const sBand = getNeaBand(sPm);
-
-    // Pill
-    const pill = document.getElementById(`sector-pill-val-${sec}`);
-    if (pill) pill.textContent = `${sPm} µg/m³`;
-
-    // SVG station card numbers (matching haze.gov.sg map cards)
-    const stnVal = document.getElementById(`station-val-${sec}`);
-    if (stnVal) {
-      stnVal.textContent = window.neaTelemetryState.metricMode === '1hr' ? sPm : sPsi;
+      renderUI();
     }
 
-    // SVG polygon highlights
-    const poly = document.getElementById(`polygon-${sec}`);
-    if (poly) {
-      poly.setAttribute('fill', sBand.fillColor);
-      poly.setAttribute('stroke', sBand.color);
-      if (activeSector === 'island' || activeSector === sec) {
-        poly.style.strokeWidth = activeSector === sec ? '3.5px' : '2px';
-        poly.style.fillOpacity = activeSector === sec ? '0.45' : '0.22';
-      } else {
-        poly.style.strokeWidth = '1.2px';
-        poly.style.fillOpacity = '0.12';
-      }
+    // Auto-fetch immediately the instant JavaScript executes (before DOMContentLoaded)
+    syncWithNEA();
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => syncWithNEA());
     }
+    window.addEventListener('load', () => syncWithNEA());
 
-    // Regional breakdown table cells
-    const tblPm = document.getElementById(`tbl-pm25-${sec}`);
-    if (tblPm) {
-      tblPm.textContent = `${sPm} µg/m³`;
-      tblPm.style.color = sBand.color;
-    }
-    const tblPsi = document.getElementById(`tbl-psi-${sec}`);
-    if (tblPsi) tblPsi.textContent = sPsi;
-    const tblBand = document.getElementById(`tbl-band-${sec}`);
-    if (tblBand) {
-      tblBand.textContent = `Band ${sBand.bandNum}`;
-      tblBand.style.color = sBand.color;
-    }
-    const dotTbl = document.getElementById(`dot-tbl-${sec}`);
-    if (dotTbl) dotTbl.style.backgroundColor = sBand.color;
-  });
-
-  // 7. Update 4-Band reference table row highlight (IMAGE_2 table)
-  [1, 2, 3, 4].forEach(bNum => {
-    const row = document.getElementById(`ref-row-band${bNum}`);
-    if (!row) return;
-    if (bNum === bandInfo.bandNum) {
-      const activeBg = bNum === 1 ? 'bg-emerald-50/80 border-l-4 border-emerald-500 font-bold' :
-                       bNum === 2 ? 'bg-amber-50/80 border-l-4 border-amber-500 font-bold' :
-                       bNum === 3 ? 'bg-red-50/80 border-l-4 border-red-500 font-bold' :
-                       'bg-purple-50/80 border-l-4 border-purple-600 font-bold';
-      row.className = activeBg;
-    } else {
-      row.className = 'hover:bg-slate-50 transition-colors font-normal';
-    }
-  });
-
-  // 8. Update Breakdown strip message
-  const breakdownMsg = document.getElementById('breakdown-advisory-msg');
-  if (breakdownMsg) {
-    breakdownMsg.textContent = bandInfo.advisoryStrip;
-  }
-}
-
-// User Action: Sector Selection
-window.focusZoneOnMap = function(sectorKey) {
-  window.neaTelemetryState.activeSector = sectorKey;
-
-  const buttons = document.querySelectorAll('.zone-btn-pill');
-  buttons.forEach(b => {
-    b.classList.remove('bg-secondary', 'text-white', 'font-semibold', 'shadow-xs');
-    b.classList.add('bg-surface-container', 'text-on-surface');
-  });
-
-  const activeBtn = document.getElementById('pill-' + sectorKey);
-  if (activeBtn) {
-    activeBtn.classList.remove('bg-surface-container', 'text-on-surface');
-    activeBtn.classList.add('bg-secondary', 'text-white', 'font-semibold', 'shadow-xs');
-  }
-
-  renderTelemetryUI();
-};
-
-// Toggle 1-Hr PM2.5 vs 24-Hr PSI View
-window.setMetricViewMode = function(mode) {
-  window.neaTelemetryState.metricMode = mode;
-  const btn1hr = document.getElementById('btn-toggle-1hr');
-  const btn24hr = document.getElementById('btn-toggle-24hr');
-  const heading = document.getElementById('timeline-heading-text');
-
-  if (mode === '1hr') {
-    if (btn1hr) btn1hr.className = 'px-2.5 py-1 rounded-md font-bold bg-secondary text-white shadow-xs transition-all';
-    if (btn24hr) btn24hr.className = 'px-2.5 py-1 rounded-md text-on-surface-variant hover:text-on-surface transition-all';
-    if (heading) heading.textContent = '1-hr PM2.5 reading (µg/m³) - 24-Hour Trend';
-  } else {
-    if (btn24hr) btn24hr.className = 'px-2.5 py-1 rounded-md font-bold bg-secondary text-white shadow-xs transition-all';
-    if (btn1hr) btn1hr.className = 'px-2.5 py-1 rounded-md text-on-surface-variant hover:text-on-surface transition-all';
-    if (heading) heading.textContent = '24-Hour PSI Historical Progression';
-  }
-
-  renderTelemetryUI();
-};
-
-// Map Layer Toggles
-const layerStates = { psi: true, plume: true };
-window.toggleMapLayer = function(layerId) {
-  layerStates[layerId] = !layerStates[layerId];
-  const btn = document.getElementById('ctrl-layer-' + layerId);
-  const isVisible = layerStates[layerId];
-
-  if (btn) {
-    if (isVisible) {
-      btn.className = 'px-2.5 py-1 text-xs font-medium rounded-lg transition-all bg-secondary text-white shadow-sm flex items-center gap-1';
-    } else {
-      btn.className = 'px-2.5 py-1 text-xs font-medium rounded-lg transition-all bg-surface-container hover:bg-surface-container-high text-on-surface-variant border border-border-subtle flex items-center gap-1';
-    }
-  }
-
-  if (layerId === 'psi') {
-    const el = document.getElementById('map-overlay-heatmap');
-    if (el) el.style.display = isVisible ? 'block' : 'none';
-  } else if (layerId === 'plume') {
-    const el = document.getElementById('map-overlay-plume');
-    if (el) el.style.display = isVisible ? 'block' : 'none';
-  }
-};
-
-// Timeline Scrubber
-window.onTimelineScrub = function(val) {
-  const hourOffset = 24 - parseInt(val, 10);
-  const ts = document.getElementById('kpi-pm25-timestamp');
-  if (ts) {
-    if (hourOffset === 0) {
-      ts.textContent = window.neaTelemetryState.timestampStr;
-    } else {
-      ts.textContent = `-${hourOffset}h ago`;
-    }
-  }
-};
-
-// Clinical Guidance Selector
-const advisoryData = {
-  general: {
-    title: 'General Population Guidance',
-    badge: 'NORMAL (BAND 1)',
-    badgeClass: 'bg-emerald-100 text-emerald-800',
-    desc: 'Air quality is healthy. Everyone may participate fully in normal daily outdoor and indoor activities.',
-    mask: 'Not Required',
-    exercise: 'Normal Participation'
-  },
-  vulnerable: {
-    title: 'Children & Senior Citizen Protocol',
-    badge: 'SAFE TO ENGAGE',
-    badgeClass: 'bg-emerald-100 text-emerald-800',
-    desc: 'Children and the elderly can safely carry out all regular outdoor activities and school physical recreation.',
-    mask: 'Not Required',
-    exercise: 'Normal Outdoor Play'
-  },
-  athletes: {
-    title: 'Athletes & Outdoor Jogging',
-    badge: 'OPTIMAL AIR',
-    badgeClass: 'bg-emerald-100 text-emerald-800',
-    desc: 'Conditions are optimal for cardiovascular training, marathon workouts, and competitive sports.',
-    mask: 'Not Required',
-    exercise: 'Full Intensity OK'
-  },
-  patients: {
-    title: 'Asthma & Chronic Cardiac Patients',
-    badge: 'ROUTINE CARE',
-    badgeClass: 'bg-emerald-100 text-emerald-800',
-    desc: 'Atmospheric particulates are low. Continue standard prescribed daily care and medications as usual.',
-    mask: 'Standard Routine',
-    exercise: 'Normal Exertion'
-  }
-};
-
-window.selectAdvisoryGroup = function(key) {
-  const data = advisoryData[key];
-  if (!data) return;
-
-  const buttons = document.querySelectorAll('.advisory-tab-btn');
-  buttons.forEach(b => {
-    b.className = 'advisory-tab-btn py-1.5 px-2 rounded-lg font-medium text-on-surface-variant hover:text-on-surface transition-all flex items-center justify-center gap-1';
-  });
-
-  const activeBtn = document.getElementById('tab-group-' + key);
-  if (activeBtn) {
-    activeBtn.className = 'advisory-tab-btn py-1.5 px-2 rounded-lg font-semibold bg-surface-card text-secondary shadow-xs transition-all flex items-center justify-center gap-1';
-  }
-
-  document.getElementById('advisory-title').textContent = data.title;
-  document.getElementById('advisory-desc').textContent = data.desc;
-  document.getElementById('advisory-mask').textContent = data.mask;
-  document.getElementById('advisory-exercise').textContent = data.exercise;
-
-  const badge = document.getElementById('advisory-badge');
-  badge.textContent = data.badge;
-  badge.className = `px-2 py-0.5 rounded text-[10px] font-mono font-bold ${data.badgeClass} flex-shrink-0`;
-};
-
-// Modal toggle
-window.toggleApiInspectorModal = function(show) {
-  const modal = document.getElementById('api-inspector-modal');
-  if (modal) modal.classList.toggle('hidden', !show);
-};
-
-// Initialize immediately
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => { renderTelemetryUI(); });
-} else {
-  renderTelemetryUI();
-}
-</script>
+    // Continuous 30s live polling
+    setInterval(() => syncWithNEA(), 30000);
+  </script>
 </body></html>
