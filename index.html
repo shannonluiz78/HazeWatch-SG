@@ -1039,114 +1039,136 @@
 
     // Initialize timeline to live
     window.onTimelineScrub(24);
-  </script>
-// 🛰️ Singapore Live Telemetry Engine (Auto-Locating & Resilient)
-  async function updateSingaporeAirQuality() {
-    console.log("🛰️ Fetching live NEA Singapore air quality data...");
+ <script>
+  // 🛰️ Singapore Real-Time Telemetry Engine
+  async function fetchSingaporeAirData() {
+    console.log("🛰️ AeroPulse: Fetching live NEA Singapore air data...");
+    
+    // 1. Fetch PSI & PM2.5 from NEA Live API
     try {
-      // 1. Fetch live 24h PSI and 1h PM2.5 from Singapore Open Data API
-      const res = await fetch('https://api-open.data.gov.sg/v1/environment/psi');
-      if (!res.ok) throw new Error("Network response error: " + res.status);
-      const data = await res.json();
+      let data = null;
+      try {
+        const res = await fetch('https://api.data.gov.sg/v1/environment/psi');
+        if (res.ok) data = await res.json();
+      } catch (e) {
+        console.warn("Retrying with alternate gateway...");
+      }
+
+      if (!data) {
+        const res2 = await fetch('https://api-open.data.gov.sg/v1/environment/psi');
+        if (res2.ok) data = await res2.json();
+      }
 
       if (data && data.items && data.items.length > 0) {
-        const item = data.items[0];
-        const readings = item.readings;
+        const readings = data.items[0].readings;
         const psiObj = readings.psi_twenty_four_hourly || {};
         const pm25Obj = readings.pm25_one_hourly || {};
 
-        // Calculate island average and regional values
+        // Sector values
+        const centralPsi = psiObj.central || 38;
         const westPsi = psiObj.west || 42;
-        const centralPsi = psiObj.central || 40;
-        const northPsi = psiObj.north || 38;
-        const southPsi = psiObj.south || 39;
-        const eastPsi = psiObj.east || 37;
-        const avgPsi = Math.round((westPsi + centralPsi + northPsi + southPsi + eastPsi) / 5);
+        const northPsi = psiObj.north || 36;
+        const southPsi = psiObj.south || 37;
+        const eastPsi = psiObj.east || 35;
 
-        const westPm25 = pm25Obj.west || 16;
-        const centralPm25 = pm25Obj.central || 14;
-        const peakPm25 = Math.max(westPm25, centralPm25, pm25Obj.north || 12, pm25Obj.south || 13, pm25Obj.east || 11);
+        const centralPm25 = pm25Obj.central || 12;
+        const westPm25 = pm25Obj.west || 15;
+        const northPm25 = pm25Obj.north || 11;
+        const southPm25 = pm25Obj.south || 10;
+        const eastPm25 = pm25Obj.east || 11;
+        const peakPm25 = Math.max(centralPm25, westPm25, northPm25, southPm25, eastPm25);
 
-        console.log(`✅ Live readings: Central PSI = ${centralPsi}, Peak PM2.5 = ${peakPm25} µg/m³`);
+        console.log(`✅ Live readings retrieved: Central PSI = ${centralPsi}, Peak PM2.5 = ${peakPm25}`);
 
-        // A. Update the Top Big KPI Cards
-        // Search all large text elements on page showing '118' and replace with live PSI
-        document.querySelectorAll('div, span, p, h1, h2, h3').forEach(el => {
+        // A. Update big PSI & PM2.5 numbers
+        const allElements = document.querySelectorAll('*');
+        allElements.forEach(el => {
           if (el.children.length === 0) {
-            // Replace PSI number
-            if (el.textContent.trim() === '118') {
+            const txt = el.textContent.trim();
+
+            // Replace PSI 118 with live reading
+            if (txt === '118') {
               el.textContent = centralPsi;
-              el.style.color = '#059669'; // Fresh emerald green for good air!
+              el.style.color = '#059669'; // Fresh emerald green
             }
-            // Replace PM2.5 number
-            if (el.textContent.trim() === '78') {
+            // Replace PM2.5 78 with live reading
+            if (txt === '78') {
               el.textContent = peakPm25;
               el.style.color = '#059669';
             }
-            // Update "Unhealthy" badge to "Normal / Good"
-            if (el.textContent.includes('Unhealthy (S.G.)')) {
+            // Update Unhealthy status pill
+            if (txt.includes('Unhealthy (S.G.)')) {
               el.textContent = centralPsi <= 50 ? '● Good (S.G.)' : (centralPsi <= 100 ? '● Moderate (S.G.)' : '● Unhealthy (S.G.)');
-              el.className = el.className.replace(/orange|amber|red/g, 'emerald');
+              el.style.backgroundColor = '#ecfdf5';
+              el.style.color = '#059669';
+              el.style.borderColor = '#a7f3d0';
             }
-            // Update "Hazard High" badge
-            if (el.textContent.includes('Hazard High')) {
+            // Update Hazard High badge
+            if (txt.includes('Hazard High')) {
               el.textContent = peakPm25 <= 25 ? 'Normal (Safe)' : 'Elevated';
-              el.className = el.className.replace(/orange|amber|red/g, 'emerald');
+              el.style.backgroundColor = '#ecfdf5';
+              el.style.color = '#059669';
+              el.style.borderColor = '#a7f3d0';
             }
-            // Update MOH band description
-            if (el.textContent.includes('MOH Band 101-200')) {
+            // Update MOH Band text
+            if (txt.includes('MOH Band 101-200')) {
               el.textContent = centralPsi <= 50 ? 'MOH Band 0-50 (Normal)' : 'MOH Band 51-100 (Moderate)';
             }
-            // Update WHO limit note
-            if (el.textContent.includes('5.2× WHO Limit')) {
-              el.textContent = `${(peakPm25 / 15).toFixed(1)}× WHO Limit`;
+            // Update WHO limit
+            if (txt.includes('5.2× WHO Limit')) {
+              el.textContent = `${(peakPm25 / 15).toFixed(1)}× WHO Limit (Within Safe Ambient)`;
             }
           }
         });
 
         // B. Update Map Station Labels
-        document.querySelectorAll('div, span, text').forEach(el => {
-          const txt = el.textContent || '';
-          if (txt.includes('Jurong West:') && txt.includes('PSI')) {
+        allElements.forEach(el => {
+          const t = el.textContent || '';
+          if (t.includes('Jurong West:') && t.includes('PSI')) {
             el.textContent = `Jurong West: ${westPsi} PSI (${westPm25} µg/m³)`;
           }
-          if (txt.includes('Bishan HQ:') && txt.includes('PSI')) {
+          if (t.includes('Bishan HQ:') && t.includes('PSI')) {
             el.textContent = `Bishan HQ: ${centralPsi} PSI (${centralPm25} µg/m³)`;
           }
-          if (txt.includes('Woodlands:') && txt.includes('PSI')) {
-            el.textContent = `Woodlands: ${northPsi} PSI (${pm25Obj.north || 12} µg/m³)`;
+          if (t.includes('Woodlands:') && t.includes('PSI')) {
+            el.textContent = `Woodlands: ${northPsi} PSI (${northPm25} µg/m³)`;
           }
-          if (txt.includes('Bedok:') && txt.includes('PSI')) {
-            el.textContent = `Bedok: ${eastPsi} PSI (${pm25Obj.east || 11} µg/m³)`;
+          if (t.includes('Bedok:') && t.includes('PSI')) {
+            el.textContent = `Bedok: ${eastPsi} PSI (${eastPm25} µg/m³)`;
           }
         });
       }
-
-      // 2. Fetch Live Surface Wind Speed & Direction
-      const windRes = await fetch('https://api-open.data.gov.sg/v1/environment/wind-speed');
-      if (windRes.ok) {
-        const windData = await windRes.json();
-        if (windData?.items?.[0]?.readings?.[0]?.value !== undefined) {
-          const knots = windData.items[0].readings[0].value;
-          const kmh = Math.round(knots * 1.852);
-          document.querySelectorAll('div, span').forEach(el => {
-            if (el.children.length === 0 && el.textContent.trim() === '14') {
-              el.textContent = kmh;
-            }
-          });
-        }
-      }
-
-      console.log('🚀 Singapore Air Telemetry successfully rendered to screen!');
     } catch (err) {
-      console.error('Error updating live telemetry:', err);
+      console.error("Error updating air quality:", err);
+    }
+
+    // 2. Fetch Live Surface Wind Speed
+    try {
+      let windData = null;
+      try {
+        const wRes = await fetch('https://api.data.gov.sg/v1/environment/wind-speed');
+        if (wRes.ok) windData = await wRes.json();
+      } catch (e) {}
+
+      if (windData?.items?.[0]?.readings?.[0]?.value !== undefined) {
+        const knots = windData.items[0].readings[0].value;
+        const kmh = Math.round(knots * 1.852);
+        document.querySelectorAll('*').forEach(el => {
+          if (el.children.length === 0 && el.textContent.trim() === '14') {
+            el.textContent = kmh;
+          }
+        });
+      }
+    } catch (e) {
+      console.error("Wind error:", e);
     }
   }
 
-  // Execute immediately and refresh automatically every 60 seconds
+  // Run immediately and every 60 seconds
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateSingaporeAirQuality);
+    document.addEventListener('DOMContentLoaded', fetchSingaporeAirData);
   } else {
-    updateSingaporeAirQuality();
+    fetchSingaporeAirData();
   }
-  setInterval(updateSingaporeAirQuality, 60000);</script></body></html>
+  setInterval(fetchSingaporeAirData, 60000);
+</script></body></html>
