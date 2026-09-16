@@ -5,12 +5,12 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>HazeWatchSG • Official Real-Time Singapore PM2.5 &amp; PSI Telemetry</title>
 <!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8f9ff; color: #0b1c30; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8f9ff; color: #0f172a; }
     .station-pin { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
     .station-pin:hover { transform: translateY(-3px) scale(1.03); }
     .active-pill { background-color: #0284c7 !important; color: #ffffff !important; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
@@ -36,8 +36,8 @@
 </div>
 </div>
 <div class="flex items-center gap-3">
-<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200" id="sync-status-pill">
-<svg class="w-3.5 h-3.5 text-emerald-600 animate-spin" fill="none" id="sync-spinner" stroke="currentColor" viewbox="0 0 24 24">
+<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+<svg class="w-3.5 h-3.5 text-emerald-600 hidden" fill="none" id="sync-spinner" stroke="currentColor" viewbox="0 0 24 24">
 <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
 </svg>
 <span id="sync-time-badge">Syncing live NEA feed...</span>
@@ -67,7 +67,7 @@
 <span class="text-5xl font-black text-emerald-600 tracking-tight" id="headline-pm25-val">--</span>
 <div class="flex flex-col">
 <span class="text-sm font-bold text-slate-600">µg/m³</span>
-<span class="text-xs font-bold text-sky-700" id="active-sector-descriptor">NORTH Sector</span>
+<span class="text-xs font-bold text-sky-700" id="active-sector-descriptor">North Sector</span>
 </div>
 </div>
 <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
@@ -85,11 +85,14 @@
 </div>
 <div class="flex items-baseline gap-3 my-1">
 <span class="text-5xl font-black text-slate-900 tracking-tight" id="headline-psi-val">--</span>
-<span class="text-xs font-semibold text-slate-500">MOH PSI Baseline</span>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-600">PSI</span>
+<span class="text-xs font-bold text-slate-600" id="active-psi-sector-descriptor">North Sector</span>
+</div>
 </div>
 <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
 <span id="headline-psi-range">Island Range: Loading...</span>
-<span>Central HQ</span>
+<span id="headline-psi-station-note">NEA 24-Hr Index</span>
 </div>
 </div>
 <!-- Card 3: Health Advisory Status -->
@@ -100,11 +103,11 @@
 </div>
 <div class="my-1">
 <div class="text-lg font-extrabold text-emerald-700 leading-tight" id="health-advice-title">Normal Activities Permitted</div>
-<p class="text-xs text-slate-500 mt-0.5" id="health-advice-desc">Air quality is healthy. Suitable for normal outdoor cardio.</p>
+<p class="text-xs text-slate-500 mt-0.5">Air quality is healthy. Suitable for normal outdoor cardio.</p>
 </div>
 <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600 font-medium">
-<span id="health-cardio-badge">🏃 Outdoor Cardio: Safe</span>
-<span id="health-mask-badge">😷 Mask: Not Required</span>
+<span id="health-quick-cardio">🏃 Outdoor Cardio: Safe</span>
+<span id="health-quick-mask">😷 Mask: Not Required</span>
 </div>
 </div>
 <!-- Card 4: Telemetry Heartbeat -->
@@ -123,13 +126,13 @@
 </div>
 </div>
 </section>
-<!-- MIDDLE: MAP CONTAINER & BENCHMARKS / CLINICAL ADVISORY -->
-<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- MIDDLE: MAP CONTAINER & BENCHMARKS -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 <!-- LEFT: MAP CONTAINER (8 COLS) -->
 <div class="lg:col-span-8 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm flex flex-col">
 <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
 <div>
-<h2 class="text-base font-extrabold text-slate-900">NEA 1-Hr PM2.5 Regional Monitoring Model</h2>
+<h2 class="text-base font-extrabold text-slate-900">NEA Regional Monitoring Telemetry Model</h2>
 <p class="text-xs text-slate-500 font-medium">Select any region to focus on local readings, matching haze.gov.sg coordinates</p>
 </div>
 <!-- Toggle Metric View -->
@@ -138,7 +141,7 @@
 <button class="px-3 py-1 rounded-md text-slate-500 hover:text-slate-900" id="toggle-psi" onclick="setMetricMode('psi')">24-Hr PSI</button>
 </div>
 </div>
-<!-- SECTOR SELECTOR PILLS (HAZE.GOV.SG ALIGNED) -->
+<!-- SECTOR SELECTOR PILLS -->
 <div class="flex flex-wrap items-center gap-2 py-3 text-xs font-semibold">
 <span class="text-slate-400 mr-1 uppercase text-[11px] tracking-wider">Sector Focus:</span>
 <button class="px-3 py-1 rounded-full bg-sky-600 text-white shadow-sm transition active-pill" id="pill-north" onclick="selectSector('north')">North: <span id="pill-val-north">--</span></button>
@@ -148,58 +151,57 @@
 <button class="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition" id="pill-east" onclick="selectSector('east')">East: <span id="pill-val-east">--</span></button>
 <button class="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition" id="pill-national" onclick="selectSector('national')">National Avg</button>
 </div>
-<!-- MAP CANVAS WITH AUTHENTIC SINGAPORE GEOGRAPHIC OUTLINE -->
-<div class="relative w-full h-[430px] sm:h-[480px] bg-[#d7e9fa] rounded-xl border border-sky-200 overflow-hidden mt-2 flex items-center justify-center">
-<!-- Authentic Singapore Island Map Background -->
-<img alt="Singapore Official Map" class="absolute inset-0 w-full h-full object-contain pointer-events-none select-none p-2 sm:p-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqDZw5KhVDZJpASb8XVpKdxiY_F32cUNZrVZIwMnCmnKPlLh9rkDjL-q7lZ3ad9XVYgP7_bGa7k87mWBJZj786e-6ZhNcNx-7vduT1hI70oiD4Z4vtJXR20OW6VFMbf0iQfWQMT-xVPnZ8rSV3llRS7XflioE4WwmNgnIZtI_BtOLqdsGSfFTxEyWoL_374X4lOr4GQT8irTSRFTms-juN1zzhpwlDRlrJvpbw7jpoQKJNtL78tDMQOMCGOqIphkOPHA"/>
-<!-- Geographic Water Labels -->
-<div class="absolute top-3 left-4 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-sky-800/60 pointer-events-none select-none">
-            Johor Strait (Malaysia)
-          </div>
-<div class="absolute bottom-3 left-4 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-sky-800/60 pointer-events-none select-none">
-            Singapore Strait (Indonesia)
-          </div>
-<!-- 1. NORTH (WOODLANDS / MANDAI) PIN -->
-<div class="station-pin absolute top-[18%] left-[45%] -translate-x-1/2 cursor-pointer z-20" id="station-card-north" onclick="selectSector('north')">
+<!-- MAP CANVAS WITH HIGH-RES SINGAPORE OUTLINE BACKGROUND -->
+<div class="relative w-full h-[440px] sm:h-[480px] bg-[#dbebfc] rounded-xl border border-slate-200 overflow-hidden mt-2 flex items-center justify-center">
+<!-- Realistic High-Res Singapore Map Outline Layer -->
+<img alt="Singapore Geography Outline" class="absolute inset-0 w-full h-full object-contain p-2 md:p-3 pointer-events-none select-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.06)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG0aEi5_wtz1memHEZbGHisWGOy2PXLwkPhe4mTYkrgGV_WVh-otR5CeQixnFL-u-3yKdSjnf1ehRmQkyIsAD1qi0i6blS_2B3pVHPJono4FA7GuGC87YSC559PrNMut0rU7AaR1m_LlJ0XovTRiJUpauAxyW_sVi5eJ8DrwSQ7FenVJByrRRCxJr35uqhdf8Xt8aXbI-66hqpu_9GH8aAHfkPAC6O1dI2McbuCaWvWaFhtWMvBX1GN_hjDVIgMzB6Dw"/>
+<!-- Geographic Sub-labels -->
+<span class="absolute top-4 left-6 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 select-none">Johor Strait (Malaysia)</span>
+<span class="absolute bottom-4 left-1/3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 select-none">Singapore Strait (Indonesia)</span>
+<span class="absolute top-[28%] right-[12%] text-[10px] font-bold text-slate-400 select-none">P. Tekong</span>
+<span class="absolute top-[26%] right-[22%] text-[10px] font-bold text-slate-400 select-none">P. Ubin</span>
+<span class="absolute bottom-[20%] left-[22%] text-[10px] font-bold text-slate-400 select-none">Jurong Island</span>
+<!-- 1. NORTH (WOODLANDS) PIN -->
+<div class="station-pin absolute top-[22%] left-[42%] -translate-x-1/2 cursor-pointer z-20" id="station-card-north" onclick="selectSector('north')">
 <div class="bg-white rounded-xl px-3.5 py-2 border-2 border-sky-600 shadow-xl text-center min-w-[115px] ring-4 ring-sky-100">
 <div class="text-[10px] font-black uppercase tracking-wider text-slate-700">North</div>
 <div class="text-2xl font-black text-slate-900 my-0.5" id="pin-val-north">--</div>
 <div class="text-[10px] font-bold text-emerald-700" id="pin-sub-north">Band 1 Normal</div>
 </div>
 </div>
-<!-- 2. CENTRAL (BISHAN / ANG MO KIO) PIN -->
-<div class="station-pin absolute top-[43%] left-[48%] -translate-x-1/2 cursor-pointer z-20" id="station-card-central" onclick="selectSector('central')">
+<!-- 2. CENTRAL (BISHAN) PIN -->
+<div class="station-pin absolute top-[47%] left-[47%] -translate-x-1/2 cursor-pointer z-20" id="station-card-central" onclick="selectSector('central')">
 <div class="bg-white/95 backdrop-blur rounded-xl px-3.5 py-2 border-2 border-slate-300 shadow-md text-center min-w-[115px]">
 <div class="text-[10px] font-black uppercase tracking-wider text-slate-700">Central</div>
 <div class="text-2xl font-black text-slate-900 my-0.5" id="pin-val-central">--</div>
 <div class="text-[10px] font-bold text-emerald-700" id="pin-sub-central">Band 1 Normal</div>
 </div>
 </div>
-<!-- 3. WEST (JURONG / TUAS) PIN -->
-<div class="station-pin absolute top-[50%] left-[23%] -translate-x-1/2 cursor-pointer z-20" id="station-card-west" onclick="selectSector('west')">
+<!-- 3. WEST (JURONG) PIN -->
+<div class="station-pin absolute top-[52%] left-[22%] -translate-x-1/2 cursor-pointer z-20" id="station-card-west" onclick="selectSector('west')">
 <div class="bg-white/95 backdrop-blur rounded-xl px-3.5 py-2 border-2 border-slate-300 shadow-md text-center min-w-[115px]">
 <div class="text-[10px] font-black uppercase tracking-wider text-slate-700">West</div>
 <div class="text-2xl font-black text-slate-900 my-0.5" id="pin-val-west">--</div>
 <div class="text-[10px] font-bold text-emerald-700" id="pin-sub-west">Band 1 Normal</div>
 </div>
 </div>
-<!-- 4. EAST (BEDOK / CHANGI / TAMPINES) PIN -->
-<div class="station-pin absolute top-[44%] left-[73%] -translate-x-1/2 cursor-pointer z-20" id="station-card-east" onclick="selectSector('east')">
+<!-- 4. EAST (BEDOK / CHANGI) PIN -->
+<div class="station-pin absolute top-[46%] left-[73%] -translate-x-1/2 cursor-pointer z-20" id="station-card-east" onclick="selectSector('east')">
 <div class="bg-white/95 backdrop-blur rounded-xl px-3.5 py-2 border-2 border-slate-300 shadow-md text-center min-w-[115px]">
 <div class="text-[10px] font-black uppercase tracking-wider text-slate-700">East</div>
 <div class="text-2xl font-black text-slate-900 my-0.5" id="pin-val-east">--</div>
 <div class="text-[10px] font-bold text-emerald-700" id="pin-sub-east">Band 1 Normal</div>
 </div>
 </div>
-<!-- 5. SOUTH (CITY / MARINA BAY / SENTOSA) PIN -->
-<div class="station-pin absolute top-[71%] left-[47%] -translate-x-1/2 cursor-pointer z-20" id="station-card-south" onclick="selectSector('south')">
+<!-- 5. SOUTH (CITY / SENTOSA) PIN -->
+<div class="station-pin absolute top-[70%] left-[49%] -translate-x-1/2 cursor-pointer z-20" id="station-card-south" onclick="selectSector('south')">
 <div class="bg-white/95 backdrop-blur rounded-xl px-3.5 py-2 border-2 border-slate-300 shadow-md text-center min-w-[115px]">
 <div class="text-[10px] font-black uppercase tracking-wider text-slate-700">South</div>
 <div class="text-2xl font-black text-slate-900 my-0.5" id="pin-val-south">--</div>
 <div class="text-[10px] font-bold text-emerald-700" id="pin-sub-south">Band 1 Normal</div>
 </div>
 </div>
-<!-- Legend -->
+<!-- Map Legend -->
 <div class="absolute bottom-3 right-3 bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-700 shadow-sm flex items-center gap-3">
 <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> 0–55 Normal</span>
 <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> 56–150 Elevated</span>
@@ -207,8 +209,8 @@
 </div>
 </div>
 </div>
-<!-- RIGHT: BENCHMARKS & MOH CLINICAL ADVISORY & STATION TABLE (4 COLS) -->
-<div class="lg:col-span-4 space-y-5">
+<!-- RIGHT: PROTOCOLS & STATION TABLE (4 COLS) -->
+<div class="lg:col-span-4 space-y-6">
 <!-- NEA Official 4-Band Standard -->
 <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
 <div class="flex items-center justify-between mb-3">
@@ -225,7 +227,7 @@
 </tr>
 </thead>
 <tbody class="divide-y divide-slate-100 font-semibold">
-<tr class="bg-emerald-50/60 text-emerald-900">
+<tr class="bg-emerald-50/50 text-emerald-900">
 <td class="p-2.5 font-bold">0 - 55</td>
 <td class="p-2.5">1</td>
 <td class="p-2.5 font-bold">Normal</td>
@@ -249,84 +251,82 @@
 </table>
 </div>
 </div>
-<!-- RESTORED: MOH OFFICIAL ADVISORY PROTOCOLS CLINICAL GUIDANCE CARD -->
-<div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-3.5">
+<!-- MOH Official Advisory Protocols Card -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-3">
 <div class="flex items-center justify-between">
 <div class="flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-sky-600"></span>
+<span class="w-2 h-2 rounded-full bg-sky-500"></span>
 <h3 class="font-extrabold text-sm text-slate-900">MOH Advisory Protocols</h3>
 </div>
-<span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-100 text-emerald-800" id="advisory-live-band-badge">
-Band 1 Guidance
-</span>
+<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800" id="moh-band-badge">
+              Band 1 Guidance
+            </span>
 </div>
 <p class="text-[11px] text-slate-500">Ministry of Health targeted health precautions indexed to active station telemetry.</p>
-<!-- Interactive Demographic Tabs -->
-<div class="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-xl text-[11px] font-bold">
-<button class="py-1.5 px-1 rounded-lg text-center transition bg-white text-slate-900 shadow-sm" id="demo-tab-general" onclick="selectDemographic('general')">General</button>
-<button class="py-1.5 px-1 rounded-lg text-center transition text-slate-600 hover:text-slate-900" id="demo-tab-vulnerable" onclick="selectDemographic('vulnerable')">Elderly/Kids</button>
-<button class="py-1.5 px-1 rounded-lg text-center transition text-slate-600 hover:text-slate-900" id="demo-tab-athletes" onclick="selectDemographic('athletes')">Athletes</button>
-<button class="py-1.5 px-1 rounded-lg text-center transition text-slate-600 hover:text-slate-900" id="demo-tab-chronic" onclick="selectDemographic('chronic')">Cardiac/Lung</button>
+<!-- Demographic Tabs -->
+<div class="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-lg text-[11px] font-bold text-center">
+<button class="py-1 rounded bg-white text-slate-900 shadow-sm" id="tab-general" onclick="setMohGroup('general')">General</button>
+<button class="py-1 rounded text-slate-600 hover:text-slate-900" id="tab-vulnerable" onclick="setMohGroup('vulnerable')">Elderly/Kids</button>
+<button class="py-1 rounded text-slate-600 hover:text-slate-900" id="tab-athletes" onclick="setMohGroup('athletes')">Athletes</button>
+<button class="py-1 rounded text-slate-600 hover:text-slate-900" id="tab-sensitive" onclick="setMohGroup('sensitive')">Cardiac/Lung</button>
 </div>
-<!-- Dynamic Protocol Detail Panel -->
-<div class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/70 space-y-2.5">
-<div class="flex items-start justify-between gap-2">
-<div>
-<div class="text-xs font-bold text-slate-900 uppercase tracking-wide" id="advisory-demographic-title">General Public</div>
-<p class="text-xs text-slate-600 mt-1 leading-relaxed" id="advisory-protocol-text">
-Normal daily outdoor activities are permissible. Everyone may participate fully in work, school, and recreation.
-</p>
+<!-- Advisory Guidance Box -->
+<div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 space-y-2.5">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold uppercase tracking-wider text-slate-600" id="moh-group-title">General Public Advisory</span>
 </div>
+<p class="text-xs text-slate-700 leading-relaxed font-medium" id="moh-group-text">
+              Normal daily outdoor activities are permissible. Everyone may participate fully in work, school, and recreation.
+            </p>
+<div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-200/60 text-xs">
+<div class="bg-white p-2 rounded-lg border border-slate-100">
+<span class="text-[10px] uppercase font-bold text-slate-400 block">Cardio / Exertion</span>
+<span class="font-bold text-emerald-700" id="moh-cardio-text">Normal / Safe</span>
 </div>
-<div class="pt-2 border-t border-slate-200/70 grid grid-cols-2 gap-2 text-[11px] font-semibold">
-<div class="p-2 rounded-lg bg-white border border-slate-200/60">
-<span class="text-slate-400 block text-[10px] uppercase tracking-wider">Cardio / Exertion</span>
-<span class="text-emerald-700 font-bold" id="advisory-cardio-val">Normal / Safe</span>
-</div>
-<div class="p-2 rounded-lg bg-white border border-slate-200/60">
-<span class="text-slate-400 block text-[10px] uppercase tracking-wider">Mask Recommendation</span>
-<span class="text-slate-700 font-bold" id="advisory-mask-val">Not Required</span>
+<div class="bg-white p-2 rounded-lg border border-slate-100">
+<span class="text-[10px] uppercase font-bold text-slate-400 block">Mask Recommendation</span>
+<span class="font-bold text-slate-700" id="moh-mask-text">Not Required</span>
 </div>
 </div>
 </div>
 </div>
 <!-- Regional Station Breakdown -->
 <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
-<h3 class="font-extrabold text-sm text-slate-900 mb-3">Regional Station Readings</h3>
-<div class="space-y-2 text-xs font-semibold">
+<h3 class="font-extrabold text-sm text-slate-900 mb-3">Regional Station Breakdown</h3>
+<div class="space-y-2.5 text-xs font-semibold">
 <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 transition" onclick="selectSector('north')">
 <span class="text-slate-700">North (Woodlands)</span>
 <div class="space-x-2">
 <span class="font-bold text-slate-900" id="row-val-north">--</span>
-<span class="text-slate-400" id="row-psi-north">(-- PSI)</span>
+<span class="text-slate-500 font-medium" id="row-psi-north">(-- PSI)</span>
 </div>
 </div>
 <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 transition" onclick="selectSector('central')">
 <span class="text-slate-700">Central (Bishan)</span>
 <div class="space-x-2">
 <span class="font-bold text-slate-900" id="row-val-central">--</span>
-<span class="text-slate-400" id="row-psi-central">(-- PSI)</span>
+<span class="text-slate-500 font-medium" id="row-psi-central">(-- PSI)</span>
 </div>
 </div>
 <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 transition" onclick="selectSector('west')">
 <span class="text-slate-700">West (Jurong)</span>
 <div class="space-x-2">
 <span class="font-bold text-slate-900" id="row-val-west">--</span>
-<span class="text-slate-400" id="row-psi-west">(-- PSI)</span>
+<span class="text-slate-500 font-medium" id="row-psi-west">(-- PSI)</span>
 </div>
 </div>
 <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 transition" onclick="selectSector('south')">
 <span class="text-slate-700">South (Sentosa)</span>
 <div class="space-x-2">
 <span class="font-bold text-slate-900" id="row-val-south">--</span>
-<span class="text-slate-400" id="row-psi-south">(-- PSI)</span>
+<span class="text-slate-500 font-medium" id="row-psi-south">(-- PSI)</span>
 </div>
 </div>
 <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 transition" onclick="selectSector('east')">
 <span class="text-slate-700">East (Bedok)</span>
 <div class="space-x-2">
 <span class="font-bold text-slate-900" id="row-val-east">--</span>
-<span class="text-slate-400" id="row-psi-east">(-- PSI)</span>
+<span class="text-slate-500 font-medium" id="row-psi-east">(-- PSI)</span>
 </div>
 </div>
 </div>
@@ -337,270 +337,119 @@ Normal daily outdoor activities are permissible. Everyone may participate fully 
 <!-- OFFICIAL NEA TELEMETRY ENGINE -->
 <script>
     let appState = {
-      pm25: { north: 33, central: 54, west: 45, south: 39, east: 34, national: 41 },
+      pm25: { north: 34, central: 59, west: 52, south: 41, east: 39, national: 45 },
       psi: { north: 48, central: 52, west: 46, south: 44, east: 42, national: 48 },
-      activeSector: 'north', // Defaults to North, matching haze.gov.sg
+      activeSector: 'north', // Matches haze.gov.sg default
       metricMode: 'pm25',
-      activeDemographic: 'general', // 'general' | 'vulnerable' | 'athletes' | 'chronic'
-      updatedAtSGT: ''
+      neaBatchTime: ''       // Official hourly publication timestamp (e.g. 4:00 PM)
     };
 
-    function getPmBandDescriptor(val) {
-      if (val <= 55) return { band: 1, text: 'Band 1 (Normal)', short: 'Band 1 Normal', colorClass: 'text-emerald-600', badgeClass: 'bg-emerald-100 text-emerald-800' };
-      if (val <= 150) return { band: 2, text: 'Band 2 (Elevated)', short: 'Band 2 Elevated', colorClass: 'text-amber-500', badgeClass: 'bg-amber-100 text-amber-800' };
-      if (val <= 250) return { band: 3, text: 'Band 3 (High)', short: 'Band 3 High', colorClass: 'text-rose-600', badgeClass: 'bg-rose-100 text-rose-800' };
-      return { band: 4, text: 'Band 4 (Very High)', short: 'Band 4 Very High', colorClass: 'text-purple-700', badgeClass: 'bg-purple-100 text-purple-800' };
-    }
-
-    function getPsiDescriptor(val) {
-      if (val <= 50) return { label: 'Good (0–50)', badgeClass: 'bg-emerald-100 text-emerald-800' };
-      if (val <= 100) return { label: 'Moderate (51–100)', badgeClass: 'bg-blue-100 text-blue-800' };
-      if (val <= 200) return { label: 'Unhealthy (101–200)', badgeClass: 'bg-amber-100 text-amber-800' };
-      if (val <= 300) return { label: 'Very Unhealthy (201–300)', badgeClass: 'bg-rose-100 text-rose-800' };
-      return { label: 'Hazardous (301+)', badgeClass: 'bg-purple-100 text-purple-800' };
-    }
+    let lastClientSyncTime = ''; // Stores live local device time of newest fetch
+    let activeMohGroup = 'general';
 
     // Resilient Dual-Endpoint Fetcher with Sorting by Timestamp
     async function syncWithNEA(isManual = false) {
       const spinner = document.getElementById('sync-spinner');
       const refreshIcon = document.getElementById('refresh-icon');
-      const syncBadge = document.getElementById('sync-time-badge');
-
       if (spinner) spinner.classList.remove('hidden');
       if (refreshIcon) refreshIcon.classList.add('animate-spin');
 
-      // Instant visual feedback for user
-      if (isManual && syncBadge) {
-        syncBadge.textContent = 'Syncing latest NEA data...';
-      }
-
       const cacheBust = Date.now();
-      let fetchedFreshTimestamp = false;
 
-      // 1. Query Dedicated PM2.5 Endpoint with fallbacks
-      const pmEndpoints = [
-        `https://api-open.data.gov.sg/v1/environment/pm25?t=${cacheBust}`,
-        `https://api.data.gov.sg/v1/environment/pm25?t=${cacheBust}`
-      ];
+      // 1. Query Dedicated PM2.5 Endpoint
+      try {
+        const pmEndpoints = [
+          `https://api-open.data.gov.sg/v1/environment/pm25?t=${cacheBust}`,
+          `https://api.data.gov.sg/v1/environment/pm25?t=${cacheBust}`,
+          `https://api-open.data.gov.sg/v1/environment/psi?t=${cacheBust}`
+        ];
 
-      for (const url of pmEndpoints) {
-        try {
-          const res = await fetch(url);
-          if (!res.ok) continue;
-          const data = await res.json();
-          if (data?.items?.length > 0) {
-            // Sort descending to guarantee latest timestamp reading
-            const sorted = data.items.sort((a, b) => new Date(b.timestamp || b.update_timestamp) - new Date(a.timestamp || a.update_timestamp));
-            const latest = sorted[0];
-            const pmReadings = latest.readings?.pm25_one_hourly;
-            
-            if (pmReadings) {
-              if (pmReadings.north !== undefined) appState.pm25.north = Number(pmReadings.north);
-              if (pmReadings.central !== undefined) appState.pm25.central = Number(pmReadings.central);
-              if (pmReadings.west !== undefined) appState.pm25.west = Number(pmReadings.west);
-              if (pmReadings.south !== undefined) appState.pm25.south = Number(pmReadings.south);
-              if (pmReadings.east !== undefined) appState.pm25.east = Number(pmReadings.east);
-              appState.pm25.national = Number(pmReadings.national ?? Math.round(
-                (appState.pm25.north + appState.pm25.central + appState.pm25.west + appState.pm25.south + appState.pm25.east) / 5
-              ));
+        for (const url of pmEndpoints) {
+          try {
+            const res = await fetch(url);
+            if (!res.ok) continue;
+            const data = await res.json();
+            if (data?.items?.length > 0) {
+              // Sort descending to ensure newest hour reading
+              const sorted = data.items.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+              const latest = sorted[0];
+              const pmReadings = latest.readings?.pm25_one_hourly;
+              
+              if (pmReadings) {
+                appState.pm25.north = Number(pmReadings.north ?? appState.pm25.north);
+                appState.pm25.central = Number(pmReadings.central ?? appState.pm25.central);
+                appState.pm25.west = Number(pmReadings.west ?? appState.pm25.west);
+                appState.pm25.south = Number(pmReadings.south ?? appState.pm25.south);
+                appState.pm25.east = Number(pmReadings.east ?? appState.pm25.east);
+                appState.pm25.national = Number(pmReadings.national ?? Math.round(
+                  (appState.pm25.north + appState.pm25.central + appState.pm25.west + appState.pm25.south + appState.pm25.east) / 5
+                ));
 
-              const dateObj = new Date(latest.timestamp || latest.update_timestamp);
-              appState.updatedAtSGT = dateObj.toLocaleTimeString('en-SG', {
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true,
-                timeZone: 'Asia/Singapore'
-              });
-              fetchedFreshTimestamp = true;
-              break;
+                const dateObj = new Date(latest.timestamp || latest.update_timestamp);
+                appState.neaBatchTime = dateObj.toLocaleTimeString('en-SG', {
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                  timeZone: 'Asia/Singapore'
+                });
+                break;
+              }
             }
+          } catch (e) {
+            console.warn('Endpoint retry:', url, e);
           }
-        } catch (e) {
-          console.warn('PM2.5 endpoint attempt failed:', url, e);
         }
+      } catch (err) {
+        console.error('PM2.5 sync failed:', err);
       }
 
-      // 2. Query 24-Hr PSI Endpoint with fallbacks
-      const psiEndpoints = [
-        `https://api-open.data.gov.sg/v1/environment/psi?t=${cacheBust}`,
-        `https://api.data.gov.sg/v1/environment/psi?t=${cacheBust}`
-      ];
+      // 2. Query PSI Endpoint with Comprehensive Sector Extraction
+      try {
+        const psiEndpoints = [
+          `https://api-open.data.gov.sg/v1/environment/psi?t=${cacheBust}`,
+          `https://api.data.gov.sg/v1/environment/psi?t=${cacheBust}`
+        ];
 
-      for (const url of psiEndpoints) {
-        try {
-          const psiRes = await fetch(url);
-          if (!psiRes.ok) continue;
-          const psiData = await psiRes.json();
-          if (psiData?.items?.length > 0) {
-            const sortedPsi = psiData.items.sort((a, b) => new Date(b.timestamp || b.update_timestamp) - new Date(a.timestamp || a.update_timestamp));
-            const latestPsi = sortedPsi[0];
-            const psiReadings = latestPsi.readings?.psi_twenty_four_hourly;
-            if (psiReadings) {
-              if (psiReadings.north !== undefined) appState.psi.north = Number(psiReadings.north);
-              if (psiReadings.central !== undefined) appState.psi.central = Number(psiReadings.central);
-              if (psiReadings.west !== undefined) appState.psi.west = Number(psiReadings.west);
-              if (psiReadings.south !== undefined) appState.psi.south = Number(psiReadings.south);
-              if (psiReadings.east !== undefined) appState.psi.east = Number(psiReadings.east);
-              appState.psi.national = Number(psiReadings.national ?? psiReadings.central ?? Math.round(
-                (appState.psi.north + appState.psi.central + appState.psi.west + appState.psi.south + appState.psi.east) / 5
-              ));
-              break;
+        for (const url of psiEndpoints) {
+          try {
+            const psiRes = await fetch(url);
+            if (!psiRes.ok) continue;
+            const psiData = await psiRes.json();
+            if (psiData?.items?.length > 0) {
+              const latest = psiData.items.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+              const psiReadings = latest.readings?.psi_twenty_four_hourly;
+              if (psiReadings) {
+                appState.psi.north = Number(psiReadings.north ?? appState.psi.north);
+                appState.psi.central = Number(psiReadings.central ?? appState.psi.central);
+                appState.psi.west = Number(psiReadings.west ?? appState.psi.west);
+                appState.psi.south = Number(psiReadings.south ?? appState.psi.south);
+                appState.psi.east = Number(psiReadings.east ?? appState.psi.east);
+                appState.psi.national = Number(psiReadings.national ?? psiReadings.central ?? Math.round(
+                  (appState.psi.north + appState.psi.central + appState.psi.west + appState.psi.south + appState.psi.east) / 5
+                ));
+                break;
+              }
             }
+          } catch (e) {
+            console.warn('PSI endpoint retry:', url, e);
           }
-        } catch (err) {
-          console.warn('PSI sync attempt failed:', url, err);
         }
+      } catch (err) {
+        console.error('PSI sync error:', err);
       }
 
-      // If manual refresh was clicked or no server time parsed, record the active clock time
-      const currentNow = new Date();
-      const currentFormattedTime = currentNow.toLocaleTimeString('en-SG', {
+      // Record client local time for sync feedback
+      const now = new Date();
+      lastClientSyncTime = now.toLocaleTimeString('en-SG', {
         hour: 'numeric',
         minute: '2-digit',
-        hour12: true,
-        timeZone: 'Asia/Singapore'
+        hour12: true
       });
-
-      if (isManual || !appState.updatedAtSGT) {
-        appState.updatedAtSGT = currentFormattedTime;
-      }
 
       renderUI();
 
-      if (syncBadge) {
-        syncBadge.textContent = `Synced ${appState.updatedAtSGT} SGT`;
-      }
-
       if (spinner) spinner.classList.add('hidden');
       if (refreshIcon) refreshIcon.classList.remove('animate-spin');
-    }
-
-    function updateMohAdvisoryProtocols(currentPm) {
-      const demo = appState.activeDemographic;
-      const pmInfo = getPmBandDescriptor(currentPm);
-      const band = pmInfo.band;
-
-      const badgeEl = document.getElementById('advisory-live-band-badge');
-      const titleEl = document.getElementById('advisory-demographic-title');
-      const textEl = document.getElementById('advisory-protocol-text');
-      const cardioEl = document.getElementById('advisory-cardio-val');
-      const maskEl = document.getElementById('advisory-mask-val');
-
-      if (!badgeEl || !titleEl || !textEl || !cardioEl || !maskEl) return;
-
-      badgeEl.textContent = `Band ${band} Guidance`;
-      badgeEl.className = `px-2 py-0.5 rounded-md text-[11px] font-bold ${pmInfo.badgeClass}`;
-
-      const titles = {
-        general: 'General Public Advisory',
-        vulnerable: 'Elderly, Children & Pregnant Women',
-        athletes: 'Outdoor Athletes & High-Intensity Training',
-        chronic: 'Chronic Lung & Heart Disease Patients'
-      };
-      titleEl.textContent = titles[demo] || 'General Public';
-
-      if (band === 1) { // 0 - 55 µg/m³
-        if (demo === 'general') {
-          textEl.textContent = 'Normal daily outdoor activities are permissible. Everyone may participate fully in work, school, and recreation.';
-          cardioEl.textContent = 'Normal / Safe';
-          cardioEl.className = 'text-emerald-700 font-bold';
-          maskEl.textContent = 'Not Required';
-          maskEl.className = 'text-slate-700 font-bold';
-        } else if (demo === 'vulnerable') {
-          textEl.textContent = 'Air quality is safe. Children and seniors can enjoy normal outdoor playgrounds, walks, and activities.';
-          cardioEl.textContent = 'Normal / Safe';
-          cardioEl.className = 'text-emerald-700 font-bold';
-          maskEl.textContent = 'Not Required';
-          maskEl.className = 'text-slate-700 font-bold';
-        } else if (demo === 'athletes') {
-          textEl.textContent = 'Air quality is within normal parameters. Strenuous endurance running, cycling, and competitions are fully safe.';
-          cardioEl.textContent = 'Unrestricted Cardio';
-          cardioEl.className = 'text-emerald-700 font-bold';
-          maskEl.textContent = 'Not Required';
-          maskEl.className = 'text-slate-700 font-bold';
-        } else {
-          textEl.textContent = 'Air quality is healthy. Maintain regular prescribed medication and inhaler routines as advised by physician.';
-          cardioEl.textContent = 'Safe for routine exercise';
-          cardioEl.className = 'text-emerald-700 font-bold';
-          maskEl.textContent = 'Not Required';
-          maskEl.className = 'text-slate-700 font-bold';
-        }
-      } else if (band === 2) { // 56 - 150 µg/m³
-        if (demo === 'general') {
-          textEl.textContent = 'General public can continue normal activities. Stay hydrated and monitor for occasional eye or throat irritation.';
-          cardioEl.textContent = 'Permitted as usual';
-          cardioEl.className = 'text-emerald-700 font-bold';
-          maskEl.textContent = 'Optional';
-          maskEl.className = 'text-slate-700 font-bold';
-        } else if (demo === 'vulnerable') {
-          textEl.textContent = 'Sensitive groups (elderly, pregnant women, young children) should reduce prolonged or strenuous outdoor physical exertion.';
-          cardioEl.textContent = 'Reduce Prolonged Cardio';
-          cardioEl.className = 'text-amber-700 font-bold';
-          maskEl.textContent = 'N95 if feeling unwell';
-          maskEl.className = 'text-amber-700 font-bold';
-        } else if (demo === 'athletes') {
-          textEl.textContent = 'Elevated PM2.5 detected. Consider tapering intense anaerobic or prolonged endurance sessions (>90 mins) to indoor facilities.';
-          cardioEl.textContent = 'Moderate Intensity';
-          cardioEl.className = 'text-amber-700 font-bold';
-          maskEl.textContent = 'Not for heavy cardio';
-          maskEl.className = 'text-slate-700 font-bold';
-        } else {
-          textEl.textContent = 'Persons with asthma, bronchitis, or heart diseases should avoid strenuous exertion and keep fast-acting inhalers accessible.';
-          cardioEl.textContent = 'Avoid Strenuous Effort';
-          cardioEl.className = 'text-amber-700 font-bold';
-          maskEl.textContent = 'N95 when outdoor';
-          maskEl.className = 'text-amber-700 font-bold';
-        }
-      } else if (band === 3) { // 151 - 250 µg/m³
-        if (demo === 'general') {
-          textEl.textContent = 'Healthy persons should reduce prolonged or strenuous outdoor exertion. Minimize exposure along high-traffic corridors.';
-          cardioEl.textContent = 'Reduce Outdoor Cardio';
-          cardioEl.className = 'text-rose-700 font-bold';
-          maskEl.textContent = 'N95 Recommended';
-          maskEl.className = 'text-rose-700 font-bold';
-        } else if (demo === 'vulnerable') {
-          textEl.textContent = 'Elderly, children, and pregnant women should avoid all outdoor exertion and remain in air-conditioned indoor rooms.';
-          cardioEl.textContent = 'Strictly Avoid Outdoor';
-          cardioEl.className = 'text-rose-700 font-bold';
-          maskEl.textContent = 'N95 Mandatory Outdoor';
-          maskEl.className = 'text-rose-700 font-bold';
-        } else if (demo === 'athletes') {
-          textEl.textContent = 'High PM2.5 haze concentration. Cease all outdoor marathon, sprinting, and high-aerobic sports. Shift training indoors.';
-          cardioEl.textContent = 'Shift Indoors Only';
-          cardioEl.className = 'text-rose-700 font-bold';
-          maskEl.textContent = 'N95 for travel';
-          maskEl.className = 'text-rose-700 font-bold';
-        } else {
-          textEl.textContent = 'High clinical risk. Vulnerable patients must remain indoors with HEPA air filters running. Seek immediate medical attention if breathless.';
-          cardioEl.textContent = 'Strict Rest Indoors';
-          cardioEl.className = 'text-rose-700 font-bold';
-          maskEl.textContent = 'N95 if transitioning';
-          maskEl.className = 'text-rose-700 font-bold';
-        }
-      } else { // Band 4: >= 251 µg/m³
-        textEl.textContent = 'Very High Haze Warning. Everyone should avoid all outdoor physical activity. Close windows, operate air purifiers, and remain indoors.';
-        cardioEl.textContent = 'Suspended Entirely';
-        cardioEl.className = 'text-purple-700 font-bold';
-        maskEl.textContent = 'N95 Strictly Required';
-        maskEl.className = 'text-purple-700 font-bold';
-      }
-    }
-
-    function selectDemographic(demo) {
-      appState.activeDemographic = demo;
-      const demos = ['general', 'vulnerable', 'athletes', 'chronic'];
-      demos.forEach(d => {
-        const tab = document.getElementById(`demo-tab-${d}`);
-        if (tab) {
-          if (d === demo) {
-            tab.className = 'py-1.5 px-1 rounded-lg text-center transition bg-white text-slate-900 shadow-sm';
-          } else {
-            tab.className = 'py-1.5 px-1 rounded-lg text-center transition text-slate-600 hover:text-slate-900';
-          }
-        }
-      });
-      const currentPm = appState.activeSector === 'national' ? appState.pm25.national : appState.pm25[appState.activeSector];
-      updateMohAdvisoryProtocols(currentPm);
     }
 
     function renderUI() {
@@ -616,105 +465,99 @@ Normal daily outdoor activities are permissible. Everyone may participate fully 
 
       // 1. Headline PM2.5 Card (Direct mirror of haze.gov.sg)
       const currentPm = sec === 'national' ? appState.pm25.national : appState.pm25[sec];
-      const pmInfo = getPmBandDescriptor(currentPm);
-
       const elHeadlineVal = document.getElementById('headline-pm25-val');
       if (elHeadlineVal) {
         elHeadlineVal.textContent = currentPm;
-        elHeadlineVal.className = `text-5xl font-black ${pmInfo.colorClass} tracking-tight`;
+        elHeadlineVal.className = currentPm <= 55 
+          ? 'text-5xl font-black text-emerald-600 tracking-tight' 
+          : (currentPm <= 150 ? 'text-5xl font-black text-amber-500 tracking-tight' : 'text-5xl font-black text-rose-600 tracking-tight');
       }
 
       const elSectorLabel = document.getElementById('active-sector-descriptor');
       if (elSectorLabel) {
-        elSectorLabel.textContent = sec === 'national' ? 'NATIONAL AVERAGE' : `${sec.toUpperCase()} SECTOR`;
+        elSectorLabel.textContent = sec === 'national' ? 'National Average' : `${sec.toUpperCase()} Sector`;
       }
 
       const elRange = document.getElementById('headline-pm25-range');
-      if (elRange) elRange.textContent = `Sector Range: ${minPm} – ${maxPm} µg/m³`;
+      if (elRange) elRange.textContent = `Sector Range: ${minPm} - ${maxPm} µg/m³`;
 
       const elTime = document.getElementById('headline-timestamp');
-      if (elTime) elTime.textContent = appState.updatedAtSGT ? `At ${appState.updatedAtSGT}` : 'Live SGT';
+      if (elTime) elTime.textContent = appState.neaBatchTime ? `NEA Release: ${appState.neaBatchTime}` : 'Live SGT';
 
+      // Descriptor Band Badge
       const elBand = document.getElementById('headline-pm25-band');
       if (elBand) {
-        elBand.textContent = pmInfo.text;
-        elBand.className = `px-2.5 py-0.5 rounded-full text-xs font-bold ${pmInfo.badgeClass}`;
-      }
-
-      // 2. Headline 24-Hr PSI Card
-      const currentPsi = sec === 'national' ? (appState.psi.central || appState.psi.national) : appState.psi[sec];
-      const psiInfo = getPsiDescriptor(currentPsi);
-
-      const elHeadlinePsi = document.getElementById('headline-psi-val');
-      if (elHeadlinePsi) elHeadlinePsi.textContent = currentPsi;
-
-      const elPsiBand = document.getElementById('headline-psi-band');
-      if (elPsiBand) {
-        elPsiBand.textContent = psiInfo.label;
-        elPsiBand.className = `px-2.5 py-0.5 rounded-full text-xs font-bold ${psiInfo.badgeClass}`;
-      }
-
-      const elPsiRange = document.getElementById('headline-psi-range');
-      if (elPsiRange) elPsiRange.textContent = `Island Range: ${minPsi} – ${maxPsi} PSI`;
-
-      // 3. Update Health Advisory Top Card based on active reading
-      const elHealthBadge = document.getElementById('health-badge-status');
-      const elHealthTitle = document.getElementById('health-advice-title');
-      const elHealthDesc = document.getElementById('health-advice-desc');
-      const elHealthCardio = document.getElementById('health-cardio-badge');
-      const elHealthMask = document.getElementById('health-mask-badge');
-
-      if (elHealthBadge && elHealthTitle) {
         if (currentPm <= 55) {
-          elHealthBadge.textContent = 'Band 1';
-          elHealthBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
-          elHealthTitle.textContent = 'Normal Activities Permitted';
-          elHealthTitle.className = 'text-lg font-extrabold text-emerald-700 leading-tight';
-          if (elHealthDesc) elHealthDesc.textContent = 'Air quality is healthy. Suitable for normal outdoor cardio.';
-          if (elHealthCardio) elHealthCardio.textContent = '🏃 Outdoor Cardio: Safe';
-          if (elHealthMask) elHealthMask.textContent = '😷 Mask: Not Required';
+          elBand.textContent = 'Band 1 (Normal)';
+          elBand.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
         } else if (currentPm <= 150) {
-          elHealthBadge.textContent = 'Band 2';
-          elHealthBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
-          elHealthTitle.textContent = 'Moderate Haze Precaution';
-          elHealthTitle.className = 'text-lg font-extrabold text-amber-700 leading-tight';
-          if (elHealthDesc) elHealthDesc.textContent = 'Vulnerable persons should reduce prolonged outdoor exertion.';
-          if (elHealthCardio) elHealthCardio.textContent = '🏃 Outdoor Cardio: Moderate';
-          if (elHealthMask) elHealthMask.textContent = '😷 Mask: Optional';
+          elBand.textContent = 'Band 2 (Elevated)';
+          elBand.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
         } else {
-          elHealthBadge.textContent = 'Band 3+';
-          elHealthBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800';
-          elHealthTitle.textContent = 'Limit Outdoor Exposure';
-          elHealthTitle.className = 'text-lg font-extrabold text-rose-700 leading-tight';
-          if (elHealthDesc) elHealthDesc.textContent = 'Minimize strenuous outdoor exertion. Stay indoors where possible.';
-          if (elHealthCardio) elHealthCardio.textContent = '🏃 Outdoor Cardio: Avoid';
-          if (elHealthMask) elHealthMask.textContent = '😷 Mask: Recommended';
+          elBand.textContent = 'Band 3 (High)';
+          elBand.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800';
         }
       }
 
-      // 4. Update MOH Advisory Clinical Guidance Panel
-      updateMohAdvisoryProtocols(currentPm);
+      // 2. Headline 24-Hr PSI Card (Accurately indexed to active sector or island baseline)
+      const currentPsi = sec === 'national' ? (appState.psi.national ?? appState.psi.central) : appState.psi[sec];
+      const elHeadlinePsi = document.getElementById('headline-psi-val');
+      if (elHeadlinePsi) {
+        elHeadlinePsi.textContent = currentPsi;
+        elHeadlinePsi.className = currentPsi <= 50
+          ? 'text-5xl font-black text-emerald-600 tracking-tight'
+          : (currentPsi <= 100 ? 'text-5xl font-black text-sky-700 tracking-tight' : 'text-5xl font-black text-amber-600 tracking-tight');
+      }
 
-      // 5. Map Station Pins & Breakdown Tables
+      const elPsiSectorLabel = document.getElementById('active-psi-sector-descriptor');
+      if (elPsiSectorLabel) {
+        elPsiSectorLabel.textContent = sec === 'national' ? 'National Average' : `${sec.toUpperCase()} Sector`;
+      }
+
+      const elPsiBand = document.getElementById('headline-psi-band');
+      if (elPsiBand) {
+        if (currentPsi <= 50) {
+          elPsiBand.textContent = 'Good (0–50)';
+          elPsiBand.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
+        } else if (currentPsi <= 100) {
+          elPsiBand.textContent = 'Moderate (51–100)';
+          elPsiBand.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-100 text-sky-800';
+        } else {
+          elPsiBand.textContent = 'Unhealthy (>100)';
+          elPsiBand.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
+        }
+      }
+
+      const elPsiRange = document.getElementById('headline-psi-range');
+      if (elPsiRange) elPsiRange.textContent = `Island Range: ${minPsi} - ${maxPsi} PSI`;
+
+      // 3. Map Station Pins & Breakdown Tables
       sectors.forEach(s => {
-        const val = appState.metricMode === 'pm25' ? appState.pm25[s] : appState.psi[s];
-        const unit = appState.metricMode === 'pm25' ? ' µg/m³' : ' PSI';
+        const isPm25 = appState.metricMode === 'pm25';
+        const val = isPm25 ? appState.pm25[s] : appState.psi[s];
+        const unit = isPm25 ? ' µg/m³' : ' PSI';
 
         const pinVal = document.getElementById(`pin-val-${s}`);
         if (pinVal) pinVal.textContent = val + unit;
 
         const pinSub = document.getElementById(`pin-sub-${s}`);
         if (pinSub) {
-          const sBand = getPmBandDescriptor(appState.pm25[s]);
-          pinSub.textContent = appState.metricMode === 'pm25' ? sBand.short : getPsiDescriptor(appState.psi[s]).label.split(' ')[0];
-          pinSub.className = `text-[10px] font-bold ${sBand.colorClass}`;
+          if (isPm25) {
+            pinSub.textContent = val <= 55 ? 'Band 1 Normal' : (val <= 150 ? 'Band 2 Elevated' : 'Band 3 High');
+            pinSub.className = val <= 55 ? 'text-[10px] font-bold text-emerald-700' : (val <= 150 ? 'text-[10px] font-bold text-amber-600' : 'text-[10px] font-bold text-rose-600');
+          } else {
+            pinSub.textContent = val <= 50 ? 'PSI Good' : (val <= 100 ? 'PSI Moderate' : 'PSI Unhealthy');
+            pinSub.className = val <= 50 ? 'text-[10px] font-bold text-emerald-700' : (val <= 100 ? 'text-[10px] font-bold text-sky-700' : 'text-[10px] font-bold text-amber-600');
+          }
         }
 
         const pillVal = document.getElementById(`pill-val-${s}`);
-        if (pillVal) pillVal.textContent = appState.pm25[s] + ' µg/m³';
+        if (pillVal) {
+          pillVal.textContent = isPm25 ? `${appState.pm25[s]} µg/m³` : `${appState.psi[s]} PSI`;
+        }
 
         const rowVal = document.getElementById(`row-val-${s}`);
-        if (rowVal) rowVal.textContent = appState.pm25[s] + ' µg/m³';
+        if (rowVal) rowVal.textContent = `${appState.pm25[s]} µg/m³`;
 
         const rowPsi = document.getElementById(`row-psi-${s}`);
         if (rowPsi) rowPsi.textContent = `(${appState.psi[s]} PSI)`;
@@ -729,6 +572,99 @@ Normal daily outdoor activities are permissible. Everyone may participate fully 
           }
         }
       });
+
+      // 4. Header Timestamp Badge (Reflects actual client sync)
+      const syncBadge = document.getElementById('sync-time-badge');
+      if (syncBadge) {
+        syncBadge.textContent = lastClientSyncTime ? `Synced ${lastClientSyncTime} SGT` : 'Live Feed Connected';
+      }
+
+      // 5. Update MOH Clinical Guidance Protocols
+      updateMohProtocols(currentPm);
+    }
+
+    function updateMohProtocols(pm25Val) {
+      const badge = document.getElementById('moh-band-badge');
+      const title = document.getElementById('moh-group-title');
+      const text = document.getElementById('moh-group-text');
+      const cardio = document.getElementById('moh-cardio-text');
+      const mask = document.getElementById('moh-mask-text');
+      if (!text) return;
+
+      const band = pm25Val <= 55 ? 1 : (pm25Val <= 150 ? 2 : (pm25Val <= 250 ? 3 : 4));
+      if (badge) {
+        badge.textContent = `Band ${band} Guidance`;
+        badge.className = band === 1 
+          ? 'px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800'
+          : (band === 2 ? 'px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800' : 'px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800');
+      }
+
+      if (activeMohGroup === 'general') {
+        title.textContent = 'General Public Advisory';
+        if (band === 1) {
+          text.textContent = 'Normal daily outdoor activities are permissible. Everyone may participate fully in work, school, and recreation.';
+          cardio.textContent = 'Normal / Safe'; cardio.className = 'font-bold text-emerald-700';
+          mask.textContent = 'Not Required';
+        } else if (band === 2) {
+          text.textContent = 'Normal activities permissible. Individuals commuting for prolonged durations should pace strenuous activities.';
+          cardio.textContent = 'Moderate Intensity'; cardio.className = 'font-bold text-amber-600';
+          mask.textContent = 'Optional / If Discomfort';
+        } else {
+          text.textContent = 'Reduce strenuous outdoor exertion. Limit prolonged time outdoors.';
+          cardio.textContent = 'Avoid Heavy Cardio'; cardio.className = 'font-bold text-rose-600';
+          mask.textContent = 'N95 Recommended';
+        }
+      } else if (activeMohGroup === 'vulnerable') {
+        title.textContent = 'Elderly & Children Advisory';
+        if (band === 1) {
+          text.textContent = 'Clean air. Outdoor play and routine park walks are safe.';
+          cardio.textContent = 'Safe for Play'; cardio.className = 'font-bold text-emerald-700';
+          mask.textContent = 'Not Required';
+        } else {
+          text.textContent = 'Minimize prolonged outdoor exertion. Stay hydrated and rest frequently indoors.';
+          cardio.textContent = 'Rest Indoors'; cardio.className = 'font-bold text-amber-600';
+          mask.textContent = 'N95 if Hazy Outside';
+        }
+      } else if (activeMohGroup === 'athletes') {
+        title.textContent = 'Athletes & Outdoor Training';
+        if (band === 1) {
+          text.textContent = 'Optimal air conditions for high-intensity training, interval sprints, and marathon preparation.';
+          cardio.textContent = 'Peak Cardio Safe'; cardio.className = 'font-bold text-emerald-700';
+          mask.textContent = 'Not Required';
+        } else {
+          text.textContent = 'Shift high-intensity cardio indoors (treadmill / indoor gym). Reduce outdoor sessions below 30 mins.';
+          cardio.textContent = 'Switch to Indoor Gym'; cardio.className = 'font-bold text-amber-600';
+          mask.textContent = 'Optional';
+        }
+      } else {
+        title.textContent = 'Asthma & Cardiac Patients';
+        if (band === 1) {
+          text.textContent = 'Normal activities permitted. Keep quick-relief inhalers and routine medication readily available.';
+          cardio.textContent = 'Normal Walking'; cardio.className = 'font-bold text-emerald-700';
+          mask.textContent = 'Not Required';
+        } else {
+          text.textContent = 'Avoid outdoor physical exertion. Stay in closed indoor spaces with air purifier active.';
+          cardio.textContent = 'Strictly Indoors'; cardio.className = 'font-bold text-rose-600';
+          mask.textContent = 'Wear N95 if Outdoors';
+        }
+      }
+    }
+
+    function setMohGroup(group) {
+      activeMohGroup = group;
+      ['general', 'vulnerable', 'athletes', 'sensitive'].forEach(g => {
+        const tab = document.getElementById(`tab-${g}`);
+        if (tab) {
+          if (g === group) {
+            tab.className = 'py-1 rounded bg-white text-slate-900 shadow-sm';
+          } else {
+            tab.className = 'py-1 rounded text-slate-600 hover:text-slate-900';
+          }
+        }
+      });
+      const sec = appState.activeSector;
+      const pm = sec === 'national' ? appState.pm25.national : appState.pm25[sec];
+      updateMohProtocols(pm);
     }
 
     function selectSector(sector) {
@@ -761,15 +697,14 @@ Normal daily outdoor activities are permissible. Everyone may participate fully 
       renderUI();
     }
 
-    // Auto-fetch immediately the instant JavaScript executes
+    // Auto-fetch immediately on execution
     syncWithNEA();
-
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => syncWithNEA());
     }
     window.addEventListener('load', () => syncWithNEA());
 
-    // Continuous 30s live polling
-    setInterval(() => syncWithNEA(), 30000);
+    // Continuous 30s background live polling
+    setInterval(() => syncWithNEA(false), 30000);
   </script>
 </body></html>
