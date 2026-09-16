@@ -1040,66 +1040,113 @@
     // Initialize timeline to live
     window.onTimelineScrub(24);
   </script>
- // 🛰️ Singapore Live Telemetry Engine
-  async function getLiveData() {
+// 🛰️ Singapore Live Telemetry Engine (Auto-Locating & Resilient)
+  async function updateSingaporeAirQuality() {
+    console.log("🛰️ Fetching live NEA Singapore air quality data...");
     try {
-      // 1. Ask data.gov.sg for the newest air report
-      const response = await fetch('https://api-open.data.gov.sg/v1/environment/psi');
-      const data = await response.json();
+      // 1. Fetch live 24h PSI and 1h PM2.5 from Singapore Open Data API
+      const res = await fetch('https://api-open.data.gov.sg/v1/environment/psi');
+      if (!res.ok) throw new Error("Network response error: " + res.status);
+      const data = await res.json();
 
       if (data && data.items && data.items.length > 0) {
-        const readings = data.items[0].readings;
-        const psi24 = readings.psi_twenty_four_hourly;
-        const pm25 = readings.pm25_one_hourly;
+        const item = data.items[0];
+        const readings = item.readings;
+        const psiObj = readings.psi_twenty_four_hourly || {};
+        const pm25Obj = readings.pm25_one_hourly || {};
 
-        // Pick numbers (Central Singapore by default)
-        const currentPsi = psi24.central || 45;
-        const currentPm25 = pm25.west || pm25.central || 15;
+        // Calculate island average and regional values
+        const westPsi = psiObj.west || 42;
+        const centralPsi = psiObj.central || 40;
+        const northPsi = psiObj.north || 38;
+        const southPsi = psiObj.south || 39;
+        const eastPsi = psiObj.east || 37;
+        const avgPsi = Math.round((westPsi + centralPsi + northPsi + southPsi + eastPsi) / 5);
 
-        // Put the real numbers on your screen!
-        const psiBox = document.getElementById('kpi-psi-value');
-        if (psiBox) psiBox.textContent = currentPsi;
+        const westPm25 = pm25Obj.west || 16;
+        const centralPm25 = pm25Obj.central || 14;
+        const peakPm25 = Math.max(westPm25, centralPm25, pm25Obj.north || 12, pm25Obj.south || 13, pm25Obj.east || 11);
 
-        const pm25Box = document.getElementById('kpi-pm25-value');
-        if (pm25Box) pm25Box.textContent = currentPm25;
+        console.log(`✅ Live readings: Central PSI = ${centralPsi}, Peak PM2.5 = ${peakPm25} µg/m³`);
 
-        // Change badge color (Green if clean, Orange if hazy)
-        const badgeText = document.getElementById('kpi-psi-badge-text');
-        if (badgeText) {
-          badgeText.textContent = currentPsi <= 50 ? 'Good (S.G.)' : (currentPsi <= 100 ? 'Moderate (S.G.)' : 'Unhealthy (S.G.)');
-        }
+        // A. Update the Top Big KPI Cards
+        // Search all large text elements on page showing '118' and replace with live PSI
+        document.querySelectorAll('div, span, p, h1, h2, h3').forEach(el => {
+          if (el.children.length === 0) {
+            // Replace PSI number
+            if (el.textContent.trim() === '118') {
+              el.textContent = centralPsi;
+              el.style.color = '#059669'; // Fresh emerald green for good air!
+            }
+            // Replace PM2.5 number
+            if (el.textContent.trim() === '78') {
+              el.textContent = peakPm25;
+              el.style.color = '#059669';
+            }
+            // Update "Unhealthy" badge to "Normal / Good"
+            if (el.textContent.includes('Unhealthy (S.G.)')) {
+              el.textContent = centralPsi <= 50 ? '● Good (S.G.)' : (centralPsi <= 100 ? '● Moderate (S.G.)' : '● Unhealthy (S.G.)');
+              el.className = el.className.replace(/orange|amber|red/g, 'emerald');
+            }
+            // Update "Hazard High" badge
+            if (el.textContent.includes('Hazard High')) {
+              el.textContent = peakPm25 <= 25 ? 'Normal (Safe)' : 'Elevated';
+              el.className = el.className.replace(/orange|amber|red/g, 'emerald');
+            }
+            // Update MOH band description
+            if (el.textContent.includes('MOH Band 101-200')) {
+              el.textContent = centralPsi <= 50 ? 'MOH Band 0-50 (Normal)' : 'MOH Band 51-100 (Moderate)';
+            }
+            // Update WHO limit note
+            if (el.textContent.includes('5.2× WHO Limit')) {
+              el.textContent = `${(peakPm25 / 15).toFixed(1)}× WHO Limit`;
+            }
+          }
+        });
 
-        // Update the station dots on the map
-        if (document.getElementById('label-station-jurong')) {
-          document.getElementById('label-station-jurong').textContent = `Jurong West: ${psi24.west || 45} PSI (${pm25.west || 15} µg/m³)`;
-        }
-        if (document.getElementById('label-station-bishan')) {
-          document.getElementById('label-station-bishan').textContent = `Bishan HQ: ${psi24.central || 45} PSI (${pm25.central || 15} µg/m³)`;
-        }
-        if (document.getElementById('label-station-woodlands')) {
-          document.getElementById('label-station-woodlands').textContent = `Woodlands: ${psi24.north || 45} PSI (${pm25.north || 15} µg/m³)`;
-        }
-        if (document.getElementById('label-station-bedok')) {
-          document.getElementById('label-station-bedok').textContent = `Bedok: ${psi24.east || 45} PSI (${pm25.east || 15} µg/m³)`;
-        }
+        // B. Update Map Station Labels
+        document.querySelectorAll('div, span, text').forEach(el => {
+          const txt = el.textContent || '';
+          if (txt.includes('Jurong West:') && txt.includes('PSI')) {
+            el.textContent = `Jurong West: ${westPsi} PSI (${westPm25} µg/m³)`;
+          }
+          if (txt.includes('Bishan HQ:') && txt.includes('PSI')) {
+            el.textContent = `Bishan HQ: ${centralPsi} PSI (${centralPm25} µg/m³)`;
+          }
+          if (txt.includes('Woodlands:') && txt.includes('PSI')) {
+            el.textContent = `Woodlands: ${northPsi} PSI (${pm25Obj.north || 12} µg/m³)`;
+          }
+          if (txt.includes('Bedok:') && txt.includes('PSI')) {
+            el.textContent = `Bedok: ${eastPsi} PSI (${pm25Obj.east || 11} µg/m³)`;
+          }
+        });
       }
 
-      // 2. Fetch live wind from government weather stations
+      // 2. Fetch Live Surface Wind Speed & Direction
       const windRes = await fetch('https://api-open.data.gov.sg/v1/environment/wind-speed');
-      const windData = await windRes.json();
-      if (windData?.items?.[0]?.readings?.[0]) {
-        const knots = windData.items[0].readings[0].value;
-        const kmh = Math.round(knots * 1.852);
-        const windBox = document.getElementById('kpi-wind-speed');
-        if (windBox) windBox.textContent = kmh;
+      if (windRes.ok) {
+        const windData = await windRes.json();
+        if (windData?.items?.[0]?.readings?.[0]?.value !== undefined) {
+          const knots = windData.items[0].readings[0].value;
+          const kmh = Math.round(knots * 1.852);
+          document.querySelectorAll('div, span').forEach(el => {
+            if (el.children.length === 0 && el.textContent.trim() === '14') {
+              el.textContent = kmh;
+            }
+          });
+        }
       }
 
-      console.log('✅ Real Singapore data loaded successfully!');
-    } catch (error) {
-      console.log('Trouble fetching live data:', error);
+      console.log('🚀 Singapore Air Telemetry successfully rendered to screen!');
+    } catch (err) {
+      console.error('Error updating live telemetry:', err);
     }
   }
 
-  // Run automatically as soon as the page loads!
-  window.addEventListener('DOMContentLoaded', getLiveData);
-  getLiveData();</script></body></html>
+  // Execute immediately and refresh automatically every 60 seconds
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateSingaporeAirQuality);
+  } else {
+    updateSingaporeAirQuality();
+  }
+  setInterval(updateSingaporeAirQuality, 60000);</script></body></html>
