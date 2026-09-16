@@ -36,7 +36,7 @@
 </div>
 </div>
 <div class="flex items-center gap-3">
-<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200" id="sync-status-pill">
 <svg class="w-3.5 h-3.5 text-emerald-600 animate-spin" fill="none" id="sync-spinner" stroke="currentColor" viewbox="0 0 24 24">
 <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
 </svg>
@@ -123,8 +123,8 @@
 </div>
 </div>
 </section>
-<!-- MIDDLE: MAP CONTAINER & BENCHMARKS -->
-<section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- MIDDLE: MAP CONTAINER & BENCHMARKS / CLINICAL ADVISORY -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 <!-- LEFT: MAP CONTAINER (8 COLS) -->
 <div class="lg:col-span-8 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm flex flex-col">
 <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
@@ -207,8 +207,8 @@
 </div>
 </div>
 </div>
-<!-- RIGHT: BENCHMARKS & STATION TABLE (4 COLS) -->
-<div class="lg:col-span-4 space-y-6">
+<!-- RIGHT: BENCHMARKS & MOH CLINICAL ADVISORY & STATION TABLE (4 COLS) -->
+<div class="lg:col-span-4 space-y-5">
 <!-- NEA Official 4-Band Standard -->
 <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
 <div class="flex items-center justify-between mb-3">
@@ -249,10 +249,51 @@
 </table>
 </div>
 </div>
+<!-- RESTORED: MOH OFFICIAL ADVISORY PROTOCOLS CLINICAL GUIDANCE CARD -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-3.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-sky-600"></span>
+<h3 class="font-extrabold text-sm text-slate-900">MOH Advisory Protocols</h3>
+</div>
+<span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-100 text-emerald-800" id="advisory-live-band-badge">
+Band 1 Guidance
+</span>
+</div>
+<p class="text-[11px] text-slate-500">Ministry of Health targeted health precautions indexed to active station telemetry.</p>
+<!-- Interactive Demographic Tabs -->
+<div class="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-xl text-[11px] font-bold">
+<button class="py-1.5 px-1 rounded-lg text-center transition bg-white text-slate-900 shadow-sm" id="demo-tab-general" onclick="selectDemographic('general')">General</button>
+<button class="py-1.5 px-1 rounded-lg text-center transition text-slate-600 hover:text-slate-900" id="demo-tab-vulnerable" onclick="selectDemographic('vulnerable')">Elderly/Kids</button>
+<button class="py-1.5 px-1 rounded-lg text-center transition text-slate-600 hover:text-slate-900" id="demo-tab-athletes" onclick="selectDemographic('athletes')">Athletes</button>
+<button class="py-1.5 px-1 rounded-lg text-center transition text-slate-600 hover:text-slate-900" id="demo-tab-chronic" onclick="selectDemographic('chronic')">Cardiac/Lung</button>
+</div>
+<!-- Dynamic Protocol Detail Panel -->
+<div class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/70 space-y-2.5">
+<div class="flex items-start justify-between gap-2">
+<div>
+<div class="text-xs font-bold text-slate-900 uppercase tracking-wide" id="advisory-demographic-title">General Public</div>
+<p class="text-xs text-slate-600 mt-1 leading-relaxed" id="advisory-protocol-text">
+Normal daily outdoor activities are permissible. Everyone may participate fully in work, school, and recreation.
+</p>
+</div>
+</div>
+<div class="pt-2 border-t border-slate-200/70 grid grid-cols-2 gap-2 text-[11px] font-semibold">
+<div class="p-2 rounded-lg bg-white border border-slate-200/60">
+<span class="text-slate-400 block text-[10px] uppercase tracking-wider">Cardio / Exertion</span>
+<span class="text-emerald-700 font-bold" id="advisory-cardio-val">Normal / Safe</span>
+</div>
+<div class="p-2 rounded-lg bg-white border border-slate-200/60">
+<span class="text-slate-400 block text-[10px] uppercase tracking-wider">Mask Recommendation</span>
+<span class="text-slate-700 font-bold" id="advisory-mask-val">Not Required</span>
+</div>
+</div>
+</div>
+</div>
 <!-- Regional Station Breakdown -->
 <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
 <h3 class="font-extrabold text-sm text-slate-900 mb-3">Regional Station Readings</h3>
-<div class="space-y-2.5 text-xs font-semibold">
+<div class="space-y-2 text-xs font-semibold">
 <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 transition" onclick="selectSector('north')">
 <span class="text-slate-700">North (Woodlands)</span>
 <div class="space-x-2">
@@ -300,6 +341,7 @@
       psi: { north: 48, central: 52, west: 46, south: 44, east: 42, national: 48 },
       activeSector: 'north', // Defaults to North, matching haze.gov.sg
       metricMode: 'pm25',
+      activeDemographic: 'general', // 'general' | 'vulnerable' | 'athletes' | 'chronic'
       updatedAtSGT: ''
     };
 
@@ -322,10 +364,18 @@
     async function syncWithNEA(isManual = false) {
       const spinner = document.getElementById('sync-spinner');
       const refreshIcon = document.getElementById('refresh-icon');
+      const syncBadge = document.getElementById('sync-time-badge');
+
       if (spinner) spinner.classList.remove('hidden');
       if (refreshIcon) refreshIcon.classList.add('animate-spin');
 
+      // Instant visual feedback for user
+      if (isManual && syncBadge) {
+        syncBadge.textContent = 'Syncing latest NEA data...';
+      }
+
       const cacheBust = Date.now();
+      let fetchedFreshTimestamp = false;
 
       // 1. Query Dedicated PM2.5 Endpoint with fallbacks
       const pmEndpoints = [
@@ -361,6 +411,7 @@
                 hour12: true,
                 timeZone: 'Asia/Singapore'
               });
+              fetchedFreshTimestamp = true;
               break;
             }
           }
@@ -401,10 +452,155 @@
         }
       }
 
+      // If manual refresh was clicked or no server time parsed, record the active clock time
+      const currentNow = new Date();
+      const currentFormattedTime = currentNow.toLocaleTimeString('en-SG', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Singapore'
+      });
+
+      if (isManual || !appState.updatedAtSGT) {
+        appState.updatedAtSGT = currentFormattedTime;
+      }
+
       renderUI();
+
+      if (syncBadge) {
+        syncBadge.textContent = `Synced ${appState.updatedAtSGT} SGT`;
+      }
 
       if (spinner) spinner.classList.add('hidden');
       if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+    }
+
+    function updateMohAdvisoryProtocols(currentPm) {
+      const demo = appState.activeDemographic;
+      const pmInfo = getPmBandDescriptor(currentPm);
+      const band = pmInfo.band;
+
+      const badgeEl = document.getElementById('advisory-live-band-badge');
+      const titleEl = document.getElementById('advisory-demographic-title');
+      const textEl = document.getElementById('advisory-protocol-text');
+      const cardioEl = document.getElementById('advisory-cardio-val');
+      const maskEl = document.getElementById('advisory-mask-val');
+
+      if (!badgeEl || !titleEl || !textEl || !cardioEl || !maskEl) return;
+
+      badgeEl.textContent = `Band ${band} Guidance`;
+      badgeEl.className = `px-2 py-0.5 rounded-md text-[11px] font-bold ${pmInfo.badgeClass}`;
+
+      const titles = {
+        general: 'General Public Advisory',
+        vulnerable: 'Elderly, Children & Pregnant Women',
+        athletes: 'Outdoor Athletes & High-Intensity Training',
+        chronic: 'Chronic Lung & Heart Disease Patients'
+      };
+      titleEl.textContent = titles[demo] || 'General Public';
+
+      if (band === 1) { // 0 - 55 µg/m³
+        if (demo === 'general') {
+          textEl.textContent = 'Normal daily outdoor activities are permissible. Everyone may participate fully in work, school, and recreation.';
+          cardioEl.textContent = 'Normal / Safe';
+          cardioEl.className = 'text-emerald-700 font-bold';
+          maskEl.textContent = 'Not Required';
+          maskEl.className = 'text-slate-700 font-bold';
+        } else if (demo === 'vulnerable') {
+          textEl.textContent = 'Air quality is safe. Children and seniors can enjoy normal outdoor playgrounds, walks, and activities.';
+          cardioEl.textContent = 'Normal / Safe';
+          cardioEl.className = 'text-emerald-700 font-bold';
+          maskEl.textContent = 'Not Required';
+          maskEl.className = 'text-slate-700 font-bold';
+        } else if (demo === 'athletes') {
+          textEl.textContent = 'Air quality is within normal parameters. Strenuous endurance running, cycling, and competitions are fully safe.';
+          cardioEl.textContent = 'Unrestricted Cardio';
+          cardioEl.className = 'text-emerald-700 font-bold';
+          maskEl.textContent = 'Not Required';
+          maskEl.className = 'text-slate-700 font-bold';
+        } else {
+          textEl.textContent = 'Air quality is healthy. Maintain regular prescribed medication and inhaler routines as advised by physician.';
+          cardioEl.textContent = 'Safe for routine exercise';
+          cardioEl.className = 'text-emerald-700 font-bold';
+          maskEl.textContent = 'Not Required';
+          maskEl.className = 'text-slate-700 font-bold';
+        }
+      } else if (band === 2) { // 56 - 150 µg/m³
+        if (demo === 'general') {
+          textEl.textContent = 'General public can continue normal activities. Stay hydrated and monitor for occasional eye or throat irritation.';
+          cardioEl.textContent = 'Permitted as usual';
+          cardioEl.className = 'text-emerald-700 font-bold';
+          maskEl.textContent = 'Optional';
+          maskEl.className = 'text-slate-700 font-bold';
+        } else if (demo === 'vulnerable') {
+          textEl.textContent = 'Sensitive groups (elderly, pregnant women, young children) should reduce prolonged or strenuous outdoor physical exertion.';
+          cardioEl.textContent = 'Reduce Prolonged Cardio';
+          cardioEl.className = 'text-amber-700 font-bold';
+          maskEl.textContent = 'N95 if feeling unwell';
+          maskEl.className = 'text-amber-700 font-bold';
+        } else if (demo === 'athletes') {
+          textEl.textContent = 'Elevated PM2.5 detected. Consider tapering intense anaerobic or prolonged endurance sessions (>90 mins) to indoor facilities.';
+          cardioEl.textContent = 'Moderate Intensity';
+          cardioEl.className = 'text-amber-700 font-bold';
+          maskEl.textContent = 'Not for heavy cardio';
+          maskEl.className = 'text-slate-700 font-bold';
+        } else {
+          textEl.textContent = 'Persons with asthma, bronchitis, or heart diseases should avoid strenuous exertion and keep fast-acting inhalers accessible.';
+          cardioEl.textContent = 'Avoid Strenuous Effort';
+          cardioEl.className = 'text-amber-700 font-bold';
+          maskEl.textContent = 'N95 when outdoor';
+          maskEl.className = 'text-amber-700 font-bold';
+        }
+      } else if (band === 3) { // 151 - 250 µg/m³
+        if (demo === 'general') {
+          textEl.textContent = 'Healthy persons should reduce prolonged or strenuous outdoor exertion. Minimize exposure along high-traffic corridors.';
+          cardioEl.textContent = 'Reduce Outdoor Cardio';
+          cardioEl.className = 'text-rose-700 font-bold';
+          maskEl.textContent = 'N95 Recommended';
+          maskEl.className = 'text-rose-700 font-bold';
+        } else if (demo === 'vulnerable') {
+          textEl.textContent = 'Elderly, children, and pregnant women should avoid all outdoor exertion and remain in air-conditioned indoor rooms.';
+          cardioEl.textContent = 'Strictly Avoid Outdoor';
+          cardioEl.className = 'text-rose-700 font-bold';
+          maskEl.textContent = 'N95 Mandatory Outdoor';
+          maskEl.className = 'text-rose-700 font-bold';
+        } else if (demo === 'athletes') {
+          textEl.textContent = 'High PM2.5 haze concentration. Cease all outdoor marathon, sprinting, and high-aerobic sports. Shift training indoors.';
+          cardioEl.textContent = 'Shift Indoors Only';
+          cardioEl.className = 'text-rose-700 font-bold';
+          maskEl.textContent = 'N95 for travel';
+          maskEl.className = 'text-rose-700 font-bold';
+        } else {
+          textEl.textContent = 'High clinical risk. Vulnerable patients must remain indoors with HEPA air filters running. Seek immediate medical attention if breathless.';
+          cardioEl.textContent = 'Strict Rest Indoors';
+          cardioEl.className = 'text-rose-700 font-bold';
+          maskEl.textContent = 'N95 if transitioning';
+          maskEl.className = 'text-rose-700 font-bold';
+        }
+      } else { // Band 4: >= 251 µg/m³
+        textEl.textContent = 'Very High Haze Warning. Everyone should avoid all outdoor physical activity. Close windows, operate air purifiers, and remain indoors.';
+        cardioEl.textContent = 'Suspended Entirely';
+        cardioEl.className = 'text-purple-700 font-bold';
+        maskEl.textContent = 'N95 Strictly Required';
+        maskEl.className = 'text-purple-700 font-bold';
+      }
+    }
+
+    function selectDemographic(demo) {
+      appState.activeDemographic = demo;
+      const demos = ['general', 'vulnerable', 'athletes', 'chronic'];
+      demos.forEach(d => {
+        const tab = document.getElementById(`demo-tab-${d}`);
+        if (tab) {
+          if (d === demo) {
+            tab.className = 'py-1.5 px-1 rounded-lg text-center transition bg-white text-slate-900 shadow-sm';
+          } else {
+            tab.className = 'py-1.5 px-1 rounded-lg text-center transition text-slate-600 hover:text-slate-900';
+          }
+        }
+      });
+      const currentPm = appState.activeSector === 'national' ? appState.pm25.national : appState.pm25[appState.activeSector];
+      updateMohAdvisoryProtocols(currentPm);
     }
 
     function renderUI() {
@@ -461,7 +657,7 @@
       const elPsiRange = document.getElementById('headline-psi-range');
       if (elPsiRange) elPsiRange.textContent = `Island Range: ${minPsi} – ${maxPsi} PSI`;
 
-      // 3. Update Health Advisory Card based on active reading
+      // 3. Update Health Advisory Top Card based on active reading
       const elHealthBadge = document.getElementById('health-badge-status');
       const elHealthTitle = document.getElementById('health-advice-title');
       const elHealthDesc = document.getElementById('health-advice-desc');
@@ -496,7 +692,10 @@
         }
       }
 
-      // 4. Map Station Pins & Breakdown Tables
+      // 4. Update MOH Advisory Clinical Guidance Panel
+      updateMohAdvisoryProtocols(currentPm);
+
+      // 5. Map Station Pins & Breakdown Tables
       sectors.forEach(s => {
         const val = appState.metricMode === 'pm25' ? appState.pm25[s] : appState.psi[s];
         const unit = appState.metricMode === 'pm25' ? ' µg/m³' : ' PSI';
@@ -530,14 +729,6 @@
           }
         }
       });
-
-      // Update Header Badge
-      const syncBadge = document.getElementById('sync-time-badge');
-      if (syncBadge) {
-        const now = new Date();
-        const timeNow = now.toLocaleTimeString('en-SG', { hour: '2-digit', minute: '2-digit', hour12: true });
-        syncBadge.textContent = appState.updatedAtSGT ? `Synced ${appState.updatedAtSGT} SGT` : `Synced ${timeNow} SGT`;
-      }
     }
 
     function selectSector(sector) {
@@ -570,7 +761,7 @@
       renderUI();
     }
 
-    // Auto-fetch immediately the instant JavaScript executes (before DOMContentLoaded)
+    // Auto-fetch immediately the instant JavaScript executes
     syncWithNEA();
 
     if (document.readyState === 'loading') {
