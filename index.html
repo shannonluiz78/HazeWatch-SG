@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="min-h-screen h-auto overflow-y-auto overflow-x-hidden" lang="en"><head>
+<!DOCTYPE html><html class="min-h-screen h-auto overflow-y-auto overflow-x-hidden" lang="en" style=""><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>HazeWatchSG | National Ambient Telemetry</title>
@@ -157,11 +157,11 @@
 </span>
 <span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-tertiary-container" id="feed-status-badge">Live Connected</span>
 <span class="text-outline-variant font-body-sm text-body-sm">•</span>
-<span class="font-data-mono text-data-mono text-on-surface-variant" id="sync-countdown">Next sync: 00:14</span>
+<span class="font-data-mono text-data-mono text-on-surface-variant" id="sync-countdown">Next sync: 00:46</span>
 </div>
 <div class="flex flex-col items-end text-right shrink-0">
-<span class="font-data-mono text-xs sm:text-data-mono font-semibold text-on-surface tracking-tight leading-tight" id="live-sgt-clock">20:19:28 SGT</span>
-<span class="font-label-sm text-[9px] sm:text-[10px] text-on-surface-variant leading-tight" id="sync-status-sub">Synced 20:18:41 SGT</span>
+<span class="font-data-mono text-xs sm:text-data-mono font-semibold text-on-surface tracking-tight leading-tight" id="live-sgt-clock">20:24:45 SGT</span>
+<span class="font-label-sm text-[9px] sm:text-[10px] text-on-surface-variant leading-tight" id="sync-status-sub">Synced 20:24:31 SGT</span>
 </div>
 <!-- Refresh Button -->
 <button class="bg-secondary hover:bg-secondary/90 active:bg-blue-800 text-white font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg shadow-sm flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm shrink-0 transition active:scale-95 cursor-pointer z-10" id="btn-header-refresh" onclick="triggerManualRefresh()" title="Fetch live NEA Telemetry data now" type="button">
@@ -215,18 +215,18 @@
 <div>
 <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Island-Wide 1-Hr PM2.5</span>
 <div class="flex items-baseline gap-1 mt-1">
-<span class="font-metric-numeral-lg text-3xl sm:text-metric-numeral-lg text-on-surface" id="card-pm25-val">39</span>
+<span class="font-metric-numeral-lg text-3xl sm:text-metric-numeral-lg text-on-surface" id="card-pm25-val">65</span>
 <span class="font-body-sm text-body-sm text-on-surface-variant">µg/m³</span>
 </div>
 </div>
-<span class="px-2 py-0.5 rounded-full font-label-sm text-xs font-semibold bg-surface-container-high text-secondary" id="card-pm25-band">Band 1 (Normal 0–55)</span>
+<span class="px-2 py-0.5 rounded-full font-label-sm text-xs font-semibold bg-surface-container-high text-secondary" id="card-pm25-band">Band 2 (Elevated 56–150)</span>
 </div>
 <div class="mt-3 pt-2 border-t border-surface-container-low flex items-center justify-between font-data-mono text-xs text-on-surface-variant">
 <span class="flex items-center gap-1">
 <span class="material-symbols-outlined text-[14px] text-secondary">stacked_bar_chart</span>
-<span class="font-semibold text-on-surface" id="card-pm25-range">Range: 34 – 49 µg/m³</span>
+<span class="font-semibold text-on-surface" id="card-pm25-range">Range: 46 – 90 µg/m³</span>
 </span>
-<span class="text-secondary font-semibold" id="card-pm25-safety">Normal Activities Permitted</span>
+<span class="text-secondary font-semibold" id="card-pm25-safety">Reduce Strenuous Activity</span>
 </div>
 </div>
 <!-- KPI 2: Singapore 24-Hr PSI (Dynamic 5-Sector Mean & Official MOH Descriptors) -->
@@ -235,15 +235,15 @@
 <div>
 <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">24-Hr PSI (Island-Wide)</span>
 <div class="flex items-baseline gap-1 mt-1">
-<span class="font-metric-numeral-lg text-3xl sm:text-metric-numeral-lg text-on-surface" id="card-psi-val">48</span>
+<span class="font-metric-numeral-lg text-3xl sm:text-metric-numeral-lg text-on-surface" id="card-psi-val">82</span>
 <span class="font-body-sm text-body-sm text-on-surface-variant">PSI</span>
 </div>
 </div>
-<span class="px-2 py-0.5 rounded-full font-label-sm text-xs font-semibold bg-surface-container-high text-secondary" id="card-psi-band">Good (0–50)</span>
+<span class="px-2 py-0.5 rounded-full font-label-sm text-xs font-semibold bg-surface-container-high text-secondary" id="card-psi-band">Moderate (51–100)</span>
 </div>
 <div class="mt-3 pt-2 border-t border-surface-container-low flex items-center justify-between font-data-mono text-xs text-on-surface-variant">
-<span id="card-psi-mean-sub" class="">National Mean: 48 PSI</span>
-<span class="text-on-surface font-semibold" id="card-psi-prev">Range: 42 – 52 PSI</span>
+<span id="card-psi-mean-sub" class="">National Mean: 82 PSI</span>
+<span class="text-on-surface font-semibold" id="card-psi-prev">Range: 69 – 100 PSI</span>
 </div>
 </div>
 <!-- KPI 3: Active Hotspots (Dynamic Regional Basin VIIRS/MODIS) -->
@@ -269,17 +269,17 @@
 <div>
 <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">MSS Monsoonal Drift</span>
 <div class="flex items-baseline gap-1 mt-1">
-<span class="font-metric-numeral-lg text-2xl sm:text-metric-numeral-lg text-on-surface" id="card-wind-dir">SE 140°</span>
+<span class="font-metric-numeral-lg text-2xl sm:text-metric-numeral-lg text-on-surface" id="card-wind-dir">SE 134°</span>
 </div>
 </div>
 <div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-secondary font-label-sm text-label-sm font-semibold">
 <span class="material-symbols-outlined text-[14px]">air</span>
-<span id="card-wind-speed" class="">14 km/h</span>
+<span id="card-wind-speed" class="">9 km/h</span>
 </div>
 </div>
 <div class="mt-3 pt-2 border-t border-surface-container-low flex items-center justify-between font-data-mono text-xs text-on-surface-variant">
 <span class="">Surface Wind Vector</span>
-<span class="text-secondary font-semibold" id="card-wind-knots">7.6 Knots</span>
+<span class="text-secondary font-semibold" id="card-wind-knots">4.8 Knots</span>
 </div>
 </div>
 </section>
@@ -294,14 +294,11 @@
 <span class="font-headline-md text-base sm:text-headline-md text-on-surface font-semibold" id="banner-advisory-title">MOH Clinical Health Advisory: Elevated Particulate Range (Band 2 Elevated)</span>
 <span class="px-2 py-0.5 rounded-full bg-surface-container-lowest text-on-tertiary-container font-label-sm text-xs font-bold uppercase shadow-xs">Official Status</span>
 </div>
-<p class="font-body-md text-sm text-on-surface-variant mt-1" id="banner-advisory-desc">1-Hr PM2.5 readings across all 5 Singapore sectors are within Band 1 (34 to 49 µg/m³). Normal outdoor activities and physical recreation can be safely enjoyed by all population groups.</p>
+<p class="font-body-md text-sm text-on-surface-variant mt-1" id="banner-advisory-desc">1-Hr PM2.5 readings have entered Band 2 (56 to 150 µg/m³), reaching 90 µg/m³. Individuals, especially children, elderly, and persons with chronic heart or lung disease, should reduce strenuous outdoor exertion.</p>
 </div>
 </div>
 <div class="flex items-center gap-space-sm shrink-0 w-full md:w-auto justify-end">
-<a class="w-full sm:w-auto justify-center px-4 py-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors flex items-center gap-1.5 shadow-sm" href="#clinical-protocol">
-<span class="material-symbols-outlined text-[16px] text-secondary">medical_services</span>
-<span class="">View Guidelines</span>
-</a>
+<button class="w-full sm:w-auto justify-center px-4 py-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer" id="btn-open-guidelines" onclick="openMOHModal()" type="button"><span class="material-symbols-outlined text-[16px] text-secondary">medical_services</span><span class="">View Guidelines</span></button>
 </div>
 </div>
 <!-- MAP 1: Official Singapore Island Haze Map (NEA Real-Time Telemetry) -->
@@ -351,7 +348,7 @@ Live 1-Hr PM2.5 (µg/m³) &amp; 24-Hr PSI telemetry across 5 Singapore monitorin
 <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-surface-container-lowest shadow-md text-on-surface hover:bg-surface-container-high transition-colors text-xs border border-surface-container" id="badge-north">
 <span class="w-2 h-2 rounded-full bg-on-tertiary-container" id="dot-north"></span>
 <span class="font-label-sm font-bold whitespace-nowrap">North</span>
-<span class="font-data-mono font-bold text-on-tertiary-container metric-badge" data-pm25="37 µg/m³" data-psi="48 PSI" id="val-north">37 µg/m³</span>
+<span class="font-data-mono font-bold text-on-tertiary-container metric-badge" data-pm25="37 µg/m³" data-psi="48 PSI" id="val-north">55 µg/m³</span>
 </div>
 <div class="w-1.5 h-3 bg-secondary/60 rounded-full mt-0.5"></div>
 </div>
@@ -362,7 +359,7 @@ Live 1-Hr PM2.5 (µg/m³) &amp; 24-Hr PSI telemetry across 5 Singapore monitorin
 <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-surface-container-lowest shadow-md text-on-surface ring-2 ring-secondary hover:bg-surface-container-high transition-colors text-xs border border-surface-container" id="badge-central">
 <span class="w-2 h-2 rounded-full bg-secondary-container" id="dot-central"></span>
 <span class="font-label-sm font-bold whitespace-nowrap">Central (Bishan)</span>
-<span class="font-data-mono font-bold text-on-tertiary-container metric-badge" data-pm25="49 µg/m³" data-psi="52 PSI" id="val-central">49 µg/m³</span>
+<span class="font-data-mono font-bold text-secondary metric-badge" data-pm25="49 µg/m³" data-psi="52 PSI" id="val-central">90 µg/m³</span>
 </div>
 <div class="w-1.5 h-3 bg-secondary rounded-full mt-0.5"></div>
 </div>
@@ -373,7 +370,7 @@ Live 1-Hr PM2.5 (µg/m³) &amp; 24-Hr PSI telemetry across 5 Singapore monitorin
 <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-surface-container-lowest shadow-md text-on-surface hover:bg-surface-container-high transition-colors text-xs border border-surface-container" id="badge-west">
 <span class="w-2 h-2 rounded-full bg-secondary-container" id="dot-west"></span>
 <span class="font-label-sm font-bold whitespace-nowrap">West (Jurong)</span>
-<span class="font-data-mono font-bold text-on-tertiary-container metric-badge" data-pm25="39 µg/m³" data-psi="46 PSI" id="val-west">39 µg/m³</span>
+<span class="font-data-mono font-bold text-secondary metric-badge" data-pm25="39 µg/m³" data-psi="46 PSI" id="val-west">69 µg/m³</span>
 </div>
 <div class="w-1.5 h-3 bg-secondary/60 rounded-full mt-0.5"></div>
 </div>
@@ -384,7 +381,7 @@ Live 1-Hr PM2.5 (µg/m³) &amp; 24-Hr PSI telemetry across 5 Singapore monitorin
 <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-surface-container-lowest shadow-md text-on-surface hover:bg-surface-container-high transition-colors text-xs border border-surface-container" id="badge-east">
 <span class="w-2 h-2 rounded-full bg-secondary-container" id="dot-east"></span>
 <span class="font-label-sm font-bold whitespace-nowrap">East (Bedok)</span>
-<span class="font-data-mono font-bold text-on-tertiary-container metric-badge" data-pm25="37 µg/m³" data-psi="42 PSI" id="val-east">37 µg/m³</span>
+<span class="font-data-mono font-bold text-secondary metric-badge" data-pm25="37 µg/m³" data-psi="42 PSI" id="val-east">66 µg/m³</span>
 </div>
 <div class="w-1.5 h-3 bg-secondary/60 rounded-full mt-0.5"></div>
 </div>
@@ -395,7 +392,7 @@ Live 1-Hr PM2.5 (µg/m³) &amp; 24-Hr PSI telemetry across 5 Singapore monitorin
 <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-surface-container-lowest shadow-md text-on-surface hover:bg-surface-container-high transition-colors text-xs border border-surface-container" id="badge-south">
 <span class="w-2 h-2 rounded-full bg-on-tertiary-container" id="dot-south"></span>
 <span class="font-label-sm font-bold whitespace-nowrap">South (Sentosa)</span>
-<span class="font-data-mono font-bold text-on-tertiary-container metric-badge" data-pm25="34 µg/m³" data-psi="44 PSI" id="val-south">34 µg/m³</span>
+<span class="font-data-mono font-bold text-on-tertiary-container metric-badge" data-pm25="34 µg/m³" data-psi="44 PSI" id="val-south">46 µg/m³</span>
 </div>
 <div class="w-1.5 h-3 bg-secondary/60 rounded-full mt-0.5"></div>
 </div>
@@ -443,13 +440,13 @@ Live 1-Hr PM2.5 (µg/m³) &amp; 24-Hr PSI telemetry across 5 Singapore monitorin
 <div class="my-4 flex flex-col items-center justify-center relative">
 <svg class="w-44 sm:w-48 h-24 sm:h-28 overflow-visible" viewBox="0 0 200 110">
 <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#dce9ff" stroke-linecap="round" stroke-width="14"></path>
-<path d="M 20 100 A 80 80 0 0 1 97.5 20.0" fill="none" id="gauge-progress" stroke="#0051d5" stroke-linecap="round" stroke-width="14"></path>
+<path d="M 20 100 A 80 80 0 0 1 176.1 75.3" fill="none" id="gauge-progress" stroke="#0051d5" stroke-linecap="round" stroke-width="14" class=""></path>
 <circle cx="100" cy="100" fill="#0b1c30" r="6"></circle>
-<line id="gauge-needle" stroke="#0b1c30" stroke-linecap="round" stroke-width="3.5" x1="100" x2="97.8" y1="100" y2="30.0"></line>
+<line id="gauge-needle" stroke="#0b1c30" stroke-linecap="round" stroke-width="3.5" x1="100" x2="166.6" y1="100" y2="78.4" class=""></line>
 </svg>
 <div class="text-center -mt-6">
 <div class="flex items-baseline justify-center gap-1">
-<span class="font-metric-numeral-lg text-3xl text-on-surface" id="gauge-val">49</span>
+<span class="font-metric-numeral-lg text-3xl text-on-surface" id="gauge-val">90</span>
 <span class="font-body-md text-sm text-on-surface-variant" id="gauge-unit">µg/m³</span>
 </div>
 <span class="inline-block px-2.5 py-0.5 rounded-full bg-surface-container-lowest text-on-tertiary-container font-label-sm text-xs font-bold uppercase mt-1 shadow-sm" id="gauge-band" style="color: rgb(0, 81, 213);">Band 2 (Elevated 56–150)</span>
@@ -459,11 +456,11 @@ Live 1-Hr PM2.5 (µg/m³) &amp; 24-Hr PSI telemetry across 5 Singapore monitorin
 <div class="space-y-1.5 font-data-mono text-xs">
 <div class="flex items-center justify-between py-1.5 px-3 bg-surface-container-lowest rounded-lg border border-surface-container-high/40">
 <span class="text-on-surface-variant">24-Hr Pollutant PSI</span>
-<span class="text-on-surface font-semibold" id="sector-psi-val">52 (Moderate)</span>
+<span class="text-on-surface font-semibold" id="sector-psi-val">100 (Moderate)</span>
 </div>
 <div class="flex items-center justify-between py-1.5 px-3 bg-surface-container-lowest rounded-lg border border-surface-container-high/40">
 <span class="text-on-surface-variant">1-Hr PM2.5 Level</span>
-<span class="text-on-surface font-semibold" id="sector-pm25-row-val">49 µg/m³</span>
+<span class="text-on-surface font-semibold" id="sector-pm25-row-val">90 µg/m³</span>
 </div>
 <div class="flex items-center justify-between py-1.5 px-3 bg-surface-container-lowest rounded-lg border border-surface-container-high/40">
 <span class="text-on-surface-variant">Coordinates</span>
@@ -475,7 +472,7 @@ Live 1-Hr PM2.5 (µg/m³) &amp; 24-Hr PSI telemetry across 5 Singapore monitorin
 </div>
 <div class="flex items-center justify-between py-1.5 px-3 bg-surface-container-lowest rounded-lg border border-surface-container-high/40">
 <span class="text-on-surface-variant">Air Flow Azimuth</span>
-<span class="text-secondary font-semibold" id="sector-airflow">140° (SE) @ 14 km/h</span>
+<span class="text-secondary font-semibold" id="sector-airflow">134° (SE) @ 9 km/h</span>
 </div>
 </div>
 </div>
@@ -500,7 +497,7 @@ Live 1-Hr PM2.5 (µg/m³) &amp; 24-Hr PSI telemetry across 5 Singapore monitorin
 <span class="px-2.5 py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-secondary font-bold">ASMC Synoptic</span>
 </div>
 <p class="font-body-md text-sm sm:text-body-md text-on-surface-variant mt-1">
-NASA FIRMS Satellite Thermal Hotspots, MSS Monsoonal Wind Vectors (<span id="synoptic-wind-txt" class="">SE 140° (7.6 kts / 14 km/h)</span>), and regional plume surveillance across the Malacca Strait &amp; Southern Malaya.
+NASA FIRMS Satellite Thermal Hotspots, MSS Monsoonal Wind Vectors (<span id="synoptic-wind-txt" class="">SE 134° (4.8 kts / 9 km/h)</span>), and regional plume surveillance across the Malacca Strait &amp; Southern Malaya.
 </p>
 </div>
 <div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-lg shadow-sm border border-surface-container">
@@ -540,7 +537,7 @@ NASA FIRMS Satellite Thermal Hotspots, MSS Monsoonal Wind Vectors (<span id="syn
 <stop offset="100%" stop-color="#316bf3" stop-opacity="0.0"></stop>
 </radialGradient>
 </defs>
-<g id="wind-particles-group" transform="rotate(-4 500 300)">
+<g id="wind-particles-group" transform="rotate(-9 500 300)">
 <path class="wind-streamline-se" d="M 820 540 Q 640 400 480 300 T 260 160" fill="none" stroke="url(#streamlineGradSE)" stroke-width="2.5"></path>
 <path class="wind-streamline-se-fast" d="M 760 570 Q 590 420 440 280 T 220 130" fill="none" stroke="url(#streamlineGradSE)" stroke-width="2.5"></path>
 <path class="wind-streamline-se" d="M 880 480 Q 700 350 540 250 T 310 110" fill="none" stroke="url(#streamlineGradSE)" stroke-width="2"></path>
@@ -590,7 +587,7 @@ NASA FIRMS Satellite Thermal Hotspots, MSS Monsoonal Wind Vectors (<span id="syn
 <div class="flex flex-col items-center">
 <div class="px-2 py-0.5 rounded bg-surface-container-lowest text-on-surface font-label-sm text-xs font-bold flex items-center gap-1 shadow-lg ring-2 ring-secondary whitespace-nowrap">
 <span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-ping"></span>
-<span id="map2-sg-aqi-label" class="">SINGAPORE (PSI 48)</span>
+<span id="map2-sg-aqi-label" class="">SINGAPORE (PSI 82)</span>
 </div>
 <div class="w-0.5 h-3 bg-secondary"></div>
 </div>
@@ -599,14 +596,14 @@ NASA FIRMS Satellite Thermal Hotspots, MSS Monsoonal Wind Vectors (<span id="syn
 <div class="absolute top-3 right-3 bg-inverse-surface/90 backdrop-blur rounded-lg p-2.5 sm:p-3 text-inverse-on-surface font-data-mono text-xs max-w-[210px] sm:max-w-[240px] shadow-xl border border-surface-container-high/30">
 <div class="flex items-center justify-between pb-1 text-tertiary-fixed font-semibold">
 <span class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[14px] transition-transform duration-500" id="hud-compass-icon" style="transform: rotate(139deg);">navigation</span>
+<span class="material-symbols-outlined text-[14px] transition-transform duration-500" id="hud-compass-icon" style="transform: rotate(134deg);">navigation</span>
 <span class="">WIND HUD</span>
 </span>
 <span class="text-outline-variant font-bold" id="hud-wind-cardinal">SE</span>
 </div>
 <div class="space-y-0.5 text-[10px] sm:text-[11px] text-surface-container-highest">
-<div class="">Vector: <strong class="text-white" id="hud-wind-vector">140° Azimuth</strong></div>
-<div class="">Velocity: <strong class="text-white" id="hud-wind-velocity">14 km/h (7.6 kts)</strong></div>
+<div class="">Vector: <strong class="text-white" id="hud-wind-vector">134° Azimuth</strong></div>
+<div class="">Velocity: <strong class="text-white" id="hud-wind-velocity">9 km/h (4.8 kts)</strong></div>
 <div class="">Corridor: <strong class="text-white">Malacca Strait Inflow</strong></div>
 <div class="">Scrub: <span class="text-tertiary-fixed font-semibold" id="hud-scrub-time">+14h Rain Scrub</span></div>
 </div>
@@ -631,13 +628,9 @@ NASA Terra/Aqua MODIS &amp; NOAA-20 VIIRS • ASMC Model V4.2
 <p class="font-body-md text-sm text-on-surface-variant mt-1.5 leading-relaxed">
 Principal Architect, HazeWatchSG National Atmospheric Telemetry Mesh. Certified Environmental Systems Specialist integrating Singapore NEA meteorological APIs with NOAA-20 VIIRS multispectral telemetry.
 </p>
-<div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 mt-2.5 font-data-mono text-xs text-on-surface-variant">
-<span class="">NUS Research Fellow</span>
+<div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 mt-2.5 font-data-mono text-xs text-on-surface-variant"><span class="">CleanAir SG Initiative</span>
 <span class="text-outline-variant">•</span>
-<span class="">CleanAir SG Initiative</span>
-<span class="text-outline-variant">•</span>
-<span class="">HazeWatchSG Open Sensor Mesh</span>
-</div>
+<span class="">HazeWatchSG Open Sensor Mesh</span></div>
 </div>
 </div>
 <!-- Official Compliance Links -->
@@ -646,7 +639,7 @@ Principal Architect, HazeWatchSG National Atmospheric Telemetry Mesh. Certified 
 <span class="material-symbols-outlined text-[18px] text-secondary">open_in_new</span>
 <span class="">NEA Open Data Portal</span>
 </a>
-<a class="px-4 py-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-label-md text-sm transition-colors flex items-center justify-center gap-2 shadow-sm border border-slate-200 whitespace-nowrap" href="https://www.moh.gov.sg" rel="noopener noreferrer" target="_blank">
+<a class="px-4 py-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-label-md text-sm transition-colors flex items-center justify-center gap-2 shadow-sm border border-slate-200 whitespace-nowrap" href="https://www.moh.gov.sg/resources-statistics/educational-resources/haze" rel="noopener noreferrer" target="_blank">
 <span class="material-symbols-outlined text-[18px] text-on-tertiary-container">health_and_safety</span>
 <span class="">MOH Advisory Standards</span>
 </a>
@@ -1337,4 +1330,4 @@ Principal Architect, HazeWatchSG National Atmospheric Telemetry Mesh. Certified 
 </script>
 
 
-</body></html>
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/80 backdrop-blur-sm hidden" id="moh-guidelines-modal" onclick="handleModalBackdropClick(event)" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="bg-surface-container-lowest rounded-2xl shadow-xl border border-surface-container max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden" onclick="event.stopPropagation()"><div class="p-4 sm:p-5 border-b border-surface-container flex items-center justify-between bg-surface-container-low"><div class="flex items-center gap-2.5"><div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-secondary"><span class="material-symbols-outlined text-[20px]">health_and_safety</span></div><div><h3 class="font-headline-md text-base sm:text-headline-md text-on-surface font-bold" id="modal-title">MOH Singapore Clinical Haze Advisory</h3><p class="font-label-sm text-xs text-on-surface-variant">Official Ministry of Health Guidelines by Particulate Band &amp; Population Cohort</p></div></div><button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition cursor-pointer" onclick="closeMOHModal()" type="button" aria-label="Close modal"><span class="material-symbols-outlined text-[20px]">close</span></button></div><div class="p-4 sm:p-6 overflow-y-auto space-y-4 text-sm font-body-md"><div class="rounded-xl p-3.5 bg-surface-container-low border border-surface-container"><div class="flex items-center justify-between mb-2"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-on-tertiary-container"></span><h4 class="font-label-md font-bold text-on-surface">Band 1 (Normal 0–55 µg/m³ / PSI 0–50)</h4></div><span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-surface-container text-on-tertiary-container">Normal Activity</span></div><ul class="space-y-1 text-xs sm:text-body-sm text-on-surface-variant font-body-sm list-disc list-inside"><li class=""><strong>Healthy Persons:</strong> Normal outdoor activities and physical exercise.</li><li class=""><strong>Elderly, Pregnant &amp; Children:</strong> Normal outdoor activities.</li><li class=""><strong>Chronic Lung / Heart Diseases:</strong> Normal outdoor activities.</li></ul></div><div class="rounded-xl p-3.5 bg-surface-container-high/30 border border-secondary/30"><div class="flex items-center justify-between mb-2"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-secondary-container"></span><h4 class="font-label-md font-bold text-on-surface">Band 2 (Elevated 56–150 µg/m³ / PSI 51–100)</h4></div><span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-surface-container-high text-secondary">Moderate Vigilance</span></div><ul class="space-y-1 text-xs sm:text-body-sm text-on-surface-variant font-body-sm list-disc list-inside"><li class=""><strong>Healthy Persons:</strong> Normal outdoor activities; reduce prolonged intense exertion.</li><li class=""><strong>Elderly, Pregnant &amp; Children:</strong> Reduce sustained intense outdoor exertion.</li><li class=""><strong>Chronic Lung / Heart Diseases:</strong> Avoid strenuous physical exertion; have medication readily available.</li></ul></div><div class="rounded-xl p-3.5 bg-error-container/40 border border-error/30"><div class="flex items-center justify-between mb-2"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-error"></span><h4 class="font-label-md font-bold text-on-surface">Band 3 &amp; 4 (High &amp; Very High ≥151 µg/m³ / PSI &gt;100)</h4></div><span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-error-container text-error">Restricted Activity</span></div><ul class="space-y-1 text-xs sm:text-body-sm text-on-surface-variant font-body-sm list-disc list-inside"><li class=""><strong>Healthy Persons:</strong> Minimize outdoor activities and strenuous physical exertion.</li><li class=""><strong>Elderly, Pregnant &amp; Children:</strong> Stay indoors with windows closed and particulate air filters activated.</li><li class=""><strong>Chronic Lung / Heart Diseases:</strong> Avoid all outdoor exposure. Seek prompt medical care if experiencing respiratory distress.</li></ul></div></div><div class="p-4 bg-surface-container-low border-t border-surface-container flex flex-col sm:flex-row items-center justify-between gap-3"><a class="text-xs text-secondary hover:underline flex items-center gap-1 font-label-md" href="https://www.moh.gov.sg/resources-statistics/educational-resources/haze" target="_blank" rel="noopener noreferrer"><span class="material-symbols-outlined text-[16px]">open_in_new</span><span class="">Full Clinical Guidelines on MOH Portal</span></a><button class="w-full sm:w-auto px-4 py-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high border border-surface-container font-label-md text-xs sm:text-label-md font-semibold text-on-surface cursor-pointer" onclick="closeMOHModal()" type="button">Close</button></div></div><script>function openMOHModal(){var m=document.getElementById('moh-guidelines-modal');if(m){m.classList.remove('hidden');}}function closeMOHModal(){var m=document.getElementById('moh-guidelines-modal');if(m){m.classList.add('hidden');}}function handleModalBackdropClick(e){if(e.target&&e.target.id==='moh-guidelines-modal'){closeMOHModal();}}document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeMOHModal();}});</script></div></body></html>
