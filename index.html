@@ -31,10 +31,37 @@ body{font-family:Inter,Arial,sans-serif;font-variant-numeric:tabular-nums}button
 #singapore-reading-legend,#singapore-region-status{position:static;margin:10px 12px;display:block;max-width:none}
 #legend-label{max-width:none;font-size:11px;line-height:1.6}
 .map-credit{font-size:10px;color:#45464d;line-height:1.6;margin:10px 12px}.map-credit a{color:#0051d5;text-decoration:underline}
+#mobile-region-readings{display:none}
+#metric-toggle-group button[aria-pressed="false"],#sector-selector button[aria-pressed="false"]{background:transparent;color:#45464d;box-shadow:none;font-weight:500;opacity:1}
+#metric-toggle-group button[aria-pressed="true"],#sector-selector button[aria-pressed="true"]{background:#fff;color:#0051d5;box-shadow:0 1px 3px #0b1c3020;font-weight:700;opacity:1}
+#metric-toggle-group button,#sector-selector button{cursor:pointer;pointer-events:auto}
+#mobile-region-readings button[aria-pressed="true"]{background:#dce9ff;color:#003ea8}
 #creator-photo{object-position:center 30%}#gauge-needle,#gauge-progress{opacity:0}
 @media(max-width:1199px){#singapore-map-section [id^="badge-"]{display:grid;grid-template-columns:7px auto;gap:1px 3px;padding:3px 5px;border-radius:10px;font-size:10px}#singapore-map-section [id^="val-"]{grid-column:1/-1;font-size:9px;text-align:center;line-height:12px}}
-@media(max-width:639px){#singapore-map-section [id^="val-"]{font-size:8px}#singapore-map-section [id^="badge-"]{padding:2px 4px;font-size:9px}#singapore-map-frame>span{font-size:9px;padding:2px 4px;top:4px;left:4px}#singapore-map-section button{min-height:40px}#btn-header-refresh{min-height:40px}#singapore-region-status{display:none}}
+@media(max-width:639px){#singapore-map-section [id^="val-"]{display:none}#singapore-map-section [id^="badge-"]{padding:2px 4px;font-size:9px}#singapore-map-frame>span{font-size:9px;padding:2px 4px;top:4px;left:4px}#singapore-map-section button{min-height:40px}#btn-header-refresh{min-height:40px}#singapore-region-status{display:none}#mobile-region-readings{display:grid;gap:1px;margin:10px 12px;border:1px solid #dce9ff;border-radius:8px;overflow:hidden;background:#fff}#mobile-region-readings button{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid #eff4ff;font-size:12px}#mobile-region-readings button:last-child{border-bottom:0}#mobile-region-readings button span:last-child{font-weight:600;color:#0b1c30}}
 @media(max-width:639px){#regional-map g[font-size="18"] text{font-size:26px}}
+</style><style>
+[data-tone="blue"]{--tone:#0051d5;--tone-dark:#123b79;--tone-soft:#eff6ff;--tone-border:#bfdbfe}
+[data-tone="orange"]{--tone:#b45309;--tone-dark:#78350f;--tone-soft:#fff7ed;--tone-border:#fed7aa}
+[data-tone="red"]{--tone:#b91c1c;--tone-dark:#7f1d1d;--tone-soft:#fef2f2;--tone-border:#fecaca}
+[data-tone="neutral"]{--tone:#64748b;--tone-dark:#334155;--tone-soft:#f1f5f9;--tone-border:#cbd5e1}
+#advisory-alert-banner{background:var(--tone-soft,#f1f5f9);border-color:var(--tone-border,#cbd5e1);color:var(--tone-dark,#334155);box-shadow:0 2px 10px #0b1c3006}
+#banner-advisory-desc{color:var(--tone-dark,#334155)}#banner-advisory-badge{color:var(--tone);background:#fff9;border:1px solid var(--tone-border)}
+#advisory-icon-wrapper{background:#fff9;color:var(--tone);box-shadow:inset 0 0 0 1px var(--tone-border)}#banner-advisory-icon{color:var(--tone)}
+#btn-open-guidelines{color:var(--tone-dark);background:#fff;border:1px solid var(--tone-border)}#btn-open-guidelines:hover{background:var(--tone-soft)}
+.guide-panel{width:min(760px,100%);max-height:90vh;overflow-y:auto;background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 24px 80px #0b1c3038;color:#0b1c30}
+.guide-header{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 26px;background:#fff;border-bottom:1px solid #e2e8f0}
+.guide-eyebrow{font-size:10px;letter-spacing:.12em;font-weight:700;color:#64748b;margin-bottom:5px}.guide-header h3{font-size:22px;font-weight:700;line-height:1.25;margin:0}
+#modal-close{width:44px;height:44px;flex-shrink:0;border-radius:12px;border:1px solid #e2e8f0;background:#f8fafc;color:#334155;font-size:26px;line-height:1;cursor:pointer}#modal-close:hover{background:#eff4ff}
+.guide-body{padding:24px 26px;display:grid;gap:18px}.guide-current{display:grid;gap:5px;border:1px solid var(--tone-border);border-left:4px solid var(--tone);background:var(--tone-soft);border-radius:12px;padding:14px 16px;color:var(--tone-dark)}
+.guide-current-caption{font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:700}.guide-current strong{font-size:15px;line-height:1.5}.guide-current>span:last-child{font-size:11px;line-height:1.5}
+.guide-intro{font-size:13px;color:#475569;line-height:1.65;margin:0}.guide-palette{display:flex;gap:18px;flex-wrap:wrap;font-size:11px;color:#475569}.guide-palette span{display:inline-flex;gap:6px;align-items:center}.guide-palette i{width:8px;height:8px;border-radius:50%;background:var(--tone)}
+.guide-card{border:1px solid #e2e8f0;border-radius:14px;overflow:hidden}.guide-card h4{font-size:16px;font-weight:700;margin:16px 18px 3px}.guide-card-subtitle{font-size:11px;color:#64748b;margin:0 18px 14px}
+.guide-table{border-collapse:collapse;width:100%;font-size:13px}.guide-table thead{background:#f8fafc}.guide-table th{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#64748b;font-weight:600;text-align:left;padding:10px 18px;border-top:1px solid #e2e8f0}
+.guide-table td{padding:12px 18px;border-top:1px solid #eff4ff}.guide-table td:first-child{font-weight:600;width:34%;font-variant-numeric:tabular-nums}.guide-category{display:inline-flex;align-items:center;gap:7px;border-radius:6px;padding:4px 8px;background:var(--tone-soft);color:var(--tone-dark);font-size:12px;font-weight:600;white-space:nowrap}.guide-dot{width:6px;height:6px;border-radius:50%;background:var(--tone);flex-shrink:0}
+.guide-table tr[data-current="true"]{background:var(--tone-soft);box-shadow:inset 3px 0 var(--tone)}.guide-current-label{display:none;font-size:9px;font-weight:700;color:var(--tone-dark);margin-left:9px}.guide-table tr[data-current="true"] .guide-current-label{display:inline}
+.guide-note{font-size:11px;line-height:1.7;color:#64748b;background:#f8fafc;border-radius:10px;padding:12px 14px;margin:0}.guide-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 26px;border-top:1px solid #e2e8f0;background:#f8fafc}.guide-footer span{font-size:10px;color:#64748b}.guide-footer a{font-size:12px;font-weight:600;color:#0051d5;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:639px){.guide-panel{border-radius:16px;max-height:92vh}.guide-header{padding:16px}.guide-header h3{font-size:18px}.guide-body{padding:16px;gap:14px}.guide-card h4{margin-left:12px}.guide-card-subtitle{margin-left:12px}.guide-table th,.guide-table td{padding:10px 12px}.guide-category{font-size:11px;padding:4px 5px}.guide-current-label{display:none!important}.guide-footer{padding:14px 16px}.guide-current strong{font-size:13px}}
 </style></head><body class="bg-background text-on-surface antialiased min-h-screen flex flex-col"><a class="skip-link" href="#main-content">Skip to air quality readings</a><!-- Header: Navigation and Live Telemetry Refresh Bar -->
 <header class="sticky top-0 w-full z-50 bg-surface/95 backdrop-blur-md shadow-[0_1px_8px_rgba(11,28,48,0.04)] border-b border-surface-container">
 <div class="w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
@@ -207,7 +234,7 @@ NEA observations for five reporting regions. Select your region below. Region la
 <!-- Metric Toggle & Island Sector Tabs -->
 <div class="flex flex-wrap items-center gap-2">
 <!-- Metric Mode Switch -->
-<div class="inline-flex p-1 bg-surface-container rounded-lg" id="metric-toggle-group">
+<div class="inline-flex p-1 bg-surface-container rounded-lg" id="metric-toggle-group" role="group" aria-label="Choose one air quality metric">
 <button class="px-3 py-1 rounded-md text-xs sm:text-label-md font-semibold bg-surface-container-lowest text-secondary shadow-sm transition-all cursor-pointer" id="btn-pm25" onclick="switchMetric('pm25')" type="button">
 1-Hr PM2.5 (µg/m³)
 </button>
@@ -216,7 +243,7 @@ NEA observations for five reporting regions. Select your region below. Region la
 </button>
 </div>
 <!-- Sector Selector Pills -->
-<div class="flex flex-wrap p-1 bg-surface-container rounded-lg" id="sector-selector">
+<div class="flex flex-wrap p-1 bg-surface-container rounded-lg" id="sector-selector" role="group" aria-label="Choose one reporting region">
 <button class="sector-btn px-2 sm:px-2.5 py-1 rounded-md text-[11px] sm:text-label-sm font-semibold text-on-surface-variant hover:text-on-surface cursor-pointer" id="sec-btn-all" onclick="selectSector('all')" type="button">All</button>
 <button class="sector-btn px-2 sm:px-2.5 py-1 rounded-md text-[11px] sm:text-label-sm font-semibold text-on-surface-variant hover:text-on-surface cursor-pointer" id="sec-btn-north" onclick="selectSector('north')" type="button">North</button>
 <button class="sector-btn px-2 sm:px-2.5 py-1 rounded-md text-[11px] sm:text-label-sm font-semibold bg-surface-container-lowest text-on-surface shadow-sm cursor-pointer" id="sec-btn-central" onclick="selectSector('central')" type="button">Central</button>
@@ -288,7 +315,7 @@ NEA observations for five reporting regions. Select your region below. Region la
 </div>
 </div>
 </div>
-<!-- Classification legend beneath the map -->
+<div id="mobile-region-readings" aria-label="Readings by region"><button type="button" onclick="selectSector('north')" aria-label="Select north region"><span>North</span><span id="mobile-val-north">—</span></button><button type="button" onclick="selectSector('central')" aria-label="Select central region"><span>Central</span><span id="mobile-val-central">—</span></button><button type="button" onclick="selectSector('west')" aria-label="Select west region"><span>West</span><span id="mobile-val-west">—</span></button><button type="button" onclick="selectSector('east')" aria-label="Select east region"><span>East</span><span id="mobile-val-east">—</span></button><button type="button" onclick="selectSector('south')" aria-label="Select south region"><span>South</span><span id="mobile-val-south">—</span></button></div><!-- Classification legend beneath the map -->
 <div id="singapore-reading-legend" class="absolute bottom-3 left-3 bg-surface-container-lowest/95 backdrop-blur px-3 py-2 rounded-lg shadow-sm font-data-mono text-[11px] sm:text-data-mono border border-surface-container">
 <span id="legend-label">Select a metric to see its classification bands.</span></div>
 <!-- Station Status Chip (Bottom-Right) -->
@@ -464,12 +491,12 @@ function reading(metric, region = state.currentSector) {
   return values.every(value => value !== null) ? Math.max(...values) : null;
 }
 function band(metric, value) {
-  if (value === null) return {label: 'Unavailable', short: 'Unavailable', color: '#64748b', level: 0};
+  if (value === null) return {label: 'Unavailable', short: 'Unavailable', color: '#64748b', tone: 'neutral', level: 0};
   const levels = metric === 'pm25' ? [55,150,250,Infinity] : [50,100,200,300,Infinity];
   const labels = metric === 'pm25' ? ['Normal','Elevated','High','Very high'] : ['Good','Moderate','Unhealthy','Very unhealthy','Hazardous'];
   const index = levels.findIndex(limit => value <= limit);
   return {label: metric === 'pm25' ? `Band ${index + 1} · ${labels[index]}` : labels[index],
-    short: labels[index], color: ['#009668','#b45309','#c2410c','#ba1a1a','#7e22ce'][index], level: index + 1};
+    short: labels[index], color: (metric === 'pm25' ? ['#0051d5','#b45309','#b45309','#b91c1c'] : ['#0051d5','#b45309','#b45309','#b91c1c'])[index], tone: (metric === 'pm25' ? ['blue','orange','orange','red'] : ['blue','orange','orange','red','red'])[index], level: index + 1};
 }
 function feedStatus(metric) {
   const feed = state.feeds[metric];
@@ -505,7 +532,7 @@ function render() {
   REGION_KEYS.forEach(region => {
     const value = reading(state.activeMetric, region);
     const info = band(state.activeMetric, value);
-    setText(`val-${region}`, `${fmt(value)} ${unit}`);
+    setText(`val-${region}`, `${fmt(value)} ${unit}`); setText(`mobile-val-${region}`, `${fmt(value)} ${unit}`);
     $(`val-${region}`).style.color = info.color;
     $(`dot-${region}`).style.backgroundColor = info.color;
     $(`badge-${region}`).classList.toggle('ring-2', state.currentSector === region);
@@ -535,13 +562,13 @@ function render() {
   setText('banner-advisory-title', value === null ? 'Air quality readings unavailable' : `${state.currentSector === 'all' ? 'Highest regional' : state.currentSector[0].toUpperCase() + state.currentSector.slice(1)} ${state.activeMetric === 'pm25' ? '1-hour PM2.5' : '24-hour PSI'}: ${info.label}`);
   setText('banner-advisory-desc', guidance(state.activeMetric, value));
   setText('banner-advisory-badge', value === null ? 'CHECK OFFICIAL SOURCE' : 'INDEPENDENT SUMMARY');
-  $('advisory-alert-banner').style.borderColor = info.color;
+  $('advisory-alert-banner').style.borderColor = info.color; $('advisory-alert-banner').dataset.tone = info.tone;
   setText('banner-advisory-icon', value === null ? 'info' : info.level >= 3 ? 'warning' : 'air');
   $('banner-advisory-title').style.color = info.color;
   ['pm25','psi'].forEach(metric => $('btn-' + metric).setAttribute('aria-pressed', String(state.activeMetric === metric)));
-  ['all',...REGION_KEYS].forEach(region => $('sec-btn-' + region).setAttribute('aria-pressed', String(state.currentSector === region)));
+  ['all',...REGION_KEYS].forEach(region => $('sec-btn-' + region).setAttribute('aria-pressed', String(state.currentSector === region))); document.querySelectorAll('#mobile-region-readings button').forEach(button => button.setAttribute('aria-pressed', String(button.getAttribute('aria-label') === `Select ${state.currentSector} region`)));
   setText('legend-label', state.activeMetric === 'pm25' ? '1-hour PM2.5 bands: 0–55 Normal · 56–150 Elevated · 151–250 High · ≥251 Very high' : '24-hour PSI: 0–50 Good · 51–100 Moderate · 101–200 Unhealthy · 201–300 Very unhealthy · >300 Hazardous');
-  renderWind(); renderHotspots(); renderTrend();
+  renderWind(); renderHotspots(); renderTrend(); updateReadingGuide();
   const good = ['pm25','psi'].filter(metric => feedUsable(metric) && !state.feeds[metric].failed).length;
   const windGood = !!state.wind && !state.wind.failed && Date.now() - Date.parse(state.wind.timestamp) < 15 * 60000;
   const status = good === 2 && windGood ? 'Observations available' : good > 0 || windGood ? 'Some feeds unavailable' : 'Feeds unavailable';
@@ -656,7 +683,7 @@ function renderTrend() {
     return {timestamp: row.timestamp, value: state.currentSector === 'all' ? (values.every(v => v !== null) ? Math.max(...values) : null) : number(row.values[state.currentSector])};
   }).filter(point => point.value !== null);
   setText('trend-title', `Past 24 hours · ${state.currentSector === 'all' ? 'highest region' : state.currentSector} · ${metric === 'pm25' ? '1-hour PM2.5' : '24-hour PSI'}`);
-  const svg = $('trend-chart'); svg.replaceChildren();
+  const svg = $('trend-chart'); svg.replaceChildren(); const chartWidth = Math.max(280, svg.getBoundingClientRect().width); svg.setAttribute('viewBox', `0 0 ${chartWidth} 195`);
   $('trend-table-body').replaceChildren();
   if (points.length < 2) { setText('trend-summary', 'Historical readings unavailable. No estimated trend is shown.'); return; }
   const max = Math.max(...points.map(point => point.value),1) * 1.15;
@@ -664,14 +691,14 @@ function renderTrend() {
   let last = null, paths = [], path = '';
   points.forEach(point => {
     if (last && Date.parse(point.timestamp) - Date.parse(last.timestamp) > 90 * 60000) {paths.push(path); path = '';}
-    const x = 45 + (Date.parse(point.timestamp) - start) / 86400000 * 900;
+    const x = 45 + (Date.parse(point.timestamp) - start) / 86400000 * (chartWidth - 90);
     const y = 140 - point.value / max * 120;
     path += `${path ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)} `; last = point;
   }); paths.push(path);
   paths.forEach(d => {const line = document.createElementNS('http://www.w3.org/2000/svg','path');
     line.setAttribute('d',d); line.setAttribute('fill','none'); line.setAttribute('stroke','#0051d5'); line.setAttribute('stroke-width','2.5'); svg.append(line);});
-  [[45,14,`${Math.ceil(max)} ${unit}`],[45,158,'0'],[45,180,timeSGT(new Date(start).toISOString())],[740,180,timeSGT(new Date().toISOString())]].forEach(([x,y,label]) => {
-    const text = document.createElementNS('http://www.w3.org/2000/svg','text'); text.setAttribute('x',x); text.setAttribute('y',y); text.setAttribute('font-size','12'); text.setAttribute('fill','#45464d'); text.textContent = label; svg.append(text);
+  [[45,14,`${Math.ceil(max)} ${unit}`],[45,158,'0'],[45,180,timeSGT(new Date(start).toISOString())],[chartWidth - 45,180,timeSGT(new Date().toISOString())]].forEach(([x,y,label]) => {
+    const text = document.createElementNS('http://www.w3.org/2000/svg','text'); text.setAttribute('x',x); text.setAttribute('y',y); text.setAttribute('font-size','11'); if (x === chartWidth - 45) text.setAttribute('text-anchor','end'); text.setAttribute('fill','#45464d'); text.textContent = label.replace(' SGT',''); svg.append(text);
   });
   const delta = points[points.length - 1].value - points[points.length - 2].value;
   setText('trend-summary', `${points.length} observations · ${delta > 0 ? '+' : ''}${delta} ${unit} since previous available reading (${timeSGT(points[points.length - 2].timestamp)}). Gaps are not interpolated.`);
@@ -704,16 +731,16 @@ function renderHotspots() {
 }
 function switchMetric(metric) {
   if (!['pm25','psi'].includes(metric)) return;
-  state.activeMetric = metric; savePreference(); render();
+  state.activeMetric = metric; render(); savePreference();
   if (!state.history[metric]) loadHistory();
 }
 function selectSector(region) {
   if (!['all',...REGION_KEYS].includes(region)) return;
-  state.currentSector = region; savePreference(); render();
+  state.currentSector = region; render(); savePreference();
 }
 function savePreference() {
   try { localStorage.setItem('hazewatch-region',state.currentSector); } catch {}
-  history.replaceState(null,'',`#region=${state.currentSector}&metric=${state.activeMetric}`);
+  try { history.replaceState(null,'',`#region=${state.currentSector}&metric=${state.activeMetric}`); } catch { /* Some local-file previews restrict history updates; selections still work. */ }
 }
 async function shareRegion() {
   const url = new URL(location.href); url.hash = `region=${state.currentSector}&metric=${state.activeMetric}`;
@@ -721,7 +748,7 @@ async function shareRegion() {
   catch { setText('share-region','Copy this page’s address'); }
 }
 let modalTrigger = null;
-function openMOHModal() { modalTrigger = document.activeElement; $('moh-guidelines-modal').classList.remove('hidden'); $('modal-close').focus(); }
+function openMOHModal() { updateReadingGuide(); modalTrigger = document.activeElement; $('moh-guidelines-modal').classList.remove('hidden'); $('modal-close').focus(); }
 function closeMOHModal() { $('moh-guidelines-modal').classList.add('hidden'); modalTrigger?.focus(); }
 function handleModalBackdropClick(event) { if (event.target.id === 'moh-guidelines-modal') closeMOHModal(); }
 document.addEventListener('keydown',event => {
@@ -745,14 +772,32 @@ document.addEventListener('DOMContentLoaded',() => {
   tick(); render(); fetchLiveTelemetryData();
   setInterval(tick,1000); setInterval(render,60000);
 });
-function triggerManualRefresh() { fetchLiveTelemetryData(); }
+function triggerManualRefresh() { fetchLiveTelemetryData(); } window.addEventListener('resize', renderTrend);
 </script>
 <div id="moh-guidelines-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/80 backdrop-blur-sm hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title" onclick="handleModalBackdropClick(event)">
-<div class="bg-white rounded-2xl shadow-xl border border-surface-container max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 space-y-4" onclick="event.stopPropagation()">
-<div class="flex justify-between gap-3"><h3 id="modal-title" class="text-lg font-bold">Understanding the readings</h3><button id="modal-close" type="button" class="source-link" onclick="closeMOHModal()" aria-label="Close reading guide">Close</button></div>
-<p class="text-sm">This is an independent explanation, not an official advisory. For immediate outdoor activities, refer to NEA’s 1-hour PM2.5 personal guide. For planning ahead, use the official 24-hour PSI forecast and corresponding health advisory.</p>
-<table class="readings-table text-sm"><caption class="font-semibold text-left">1-hour PM2.5 concentration (µg/m³)</caption><thead><tr><th scope="col">Range</th><th scope="col">Descriptor</th></tr></thead><tbody><tr><td>0–55</td><td>Normal</td></tr><tr><td>56–150</td><td>Elevated</td></tr><tr><td>151–250</td><td>High</td></tr><tr><td>≥251</td><td>Very high</td></tr></tbody></table>
-<table class="readings-table text-sm"><caption class="font-semibold text-left">24-hour PSI (a separate index)</caption><thead><tr><th scope="col">Range</th><th scope="col">Descriptor</th></tr></thead><tbody><tr><td>0–50</td><td>Good</td></tr><tr><td>51–100</td><td>Moderate</td></tr><tr><td>101–200</td><td>Unhealthy</td></tr><tr><td>201–300</td><td>Very unhealthy</td></tr><tr><td>&gt;300</td><td>Hazardous</td></tr></tbody></table>
-<p class="text-xs text-on-surface-variant">These scales cannot be substituted for each other. Health, symptoms, exposure duration and activity intensity matter. A “Normal” PM2.5 band does not guarantee safety for every individual.</p>
-<a class="source-link" href="https://www.haze.gov.sg/" target="_blank" rel="noopener noreferrer">View current NEA readings and personal guide ↗</a>
-</div></div></body></html>
+<div class="guide-panel" onclick="event.stopPropagation()">
+<header class="guide-header"><div><p class="guide-eyebrow">HAZEWATCHSG · READING GUIDE</p><h3 id="modal-title">Understanding your air quality</h3></div><button id="modal-close" type="button" onclick="closeMOHModal()" aria-label="Close reading guide">×</button></header>
+<div class="guide-body"><div id="guide-current" class="guide-current" data-tone="neutral"><span class="guide-current-caption">Selected reading</span><strong id="guide-current-title">Awaiting observations</strong><span id="guide-current-time">No observation</span></div>
+<p class="guide-intro">Use 1-hour PM2.5 for immediate outdoor activity decisions. For planning ahead, consult the official 24-hour PSI forecast and health advisory. These two scales are different and cannot be substituted for each other.</p>
+<div class="guide-palette" aria-label="HazeWatchSG colour legend"><span data-tone="blue"><i aria-hidden="true"></i>Low</span><span data-tone="orange"><i aria-hidden="true"></i>Mid</span><span data-tone="red"><i aria-hidden="true"></i>High</span></div>
+<section class="guide-card" aria-labelledby="guide-pm25-title"><h4 id="guide-pm25-title">1-hour PM2.5</h4><p class="guide-card-subtitle">Recent particle concentration · µg/m³</p><table class="guide-table" data-guide-metric="pm25"><caption class="sr-only">1-hour PM2.5 classification thresholds</caption><thead><tr><th scope="col">Concentration</th><th scope="col">Category</th></tr></thead><tbody><tr data-tone="blue"><td>0–55</td><td><span class="guide-category"><span class="guide-dot" aria-hidden="true"></span>Normal</span><span class="guide-current-label">Current</span></td></tr><tr data-tone="orange"><td>56–150</td><td><span class="guide-category"><span class="guide-dot" aria-hidden="true"></span>Elevated</span><span class="guide-current-label">Current</span></td></tr><tr data-tone="orange"><td>151–250</td><td><span class="guide-category"><span class="guide-dot" aria-hidden="true"></span>High</span><span class="guide-current-label">Current</span></td></tr><tr data-tone="red"><td>≥251</td><td><span class="guide-category"><span class="guide-dot" aria-hidden="true"></span>Very high</span><span class="guide-current-label">Current</span></td></tr></tbody></table></section><section class="guide-card" aria-labelledby="guide-psi-title"><h4 id="guide-psi-title">24-hour PSI</h4><p class="guide-card-subtitle">Longer-term air quality · separate index</p><table class="guide-table" data-guide-metric="psi"><caption class="sr-only">24-hour PSI classification thresholds</caption><thead><tr><th scope="col">Index range</th><th scope="col">Category</th></tr></thead><tbody><tr data-tone="blue"><td>0–50</td><td><span class="guide-category"><span class="guide-dot" aria-hidden="true"></span>Good</span><span class="guide-current-label">Current</span></td></tr><tr data-tone="orange"><td>51–100</td><td><span class="guide-category"><span class="guide-dot" aria-hidden="true"></span>Moderate</span><span class="guide-current-label">Current</span></td></tr><tr data-tone="orange"><td>101–200</td><td><span class="guide-category"><span class="guide-dot" aria-hidden="true"></span>Unhealthy</span><span class="guide-current-label">Current</span></td></tr><tr data-tone="red"><td>201–300</td><td><span class="guide-category"><span class="guide-dot" aria-hidden="true"></span>Very unhealthy</span><span class="guide-current-label">Current</span></td></tr><tr data-tone="red"><td>&gt;300</td><td><span class="guide-category"><span class="guide-dot" aria-hidden="true"></span>Hazardous</span><span class="guide-current-label">Current</span></td></tr></tbody></table></section>
+<p class="guide-note">Colours are HazeWatchSG’s visual styling, not official NEA colour codes. Category names and thresholds remain unchanged. Health, symptoms, exposure duration and activity intensity also matter; a “Normal” PM2.5 band does not guarantee safety for every individual.</p></div>
+<footer class="guide-footer"><span>Independent explanation · not an official advisory</span><a href="https://www.haze.gov.sg/" target="_blank" rel="noopener noreferrer">View NEA readings &amp; activity guide ↗</a></footer>
+</div></div><script>
+function updateReadingGuide() {
+  const value = reading(state.activeMetric), info = band(state.activeMetric,value);
+  const region = state.currentSector === 'all' ? 'Highest regional reading' : state.currentSector[0].toUpperCase() + state.currentSector.slice(1) + ' region';
+  const metric = state.activeMetric === 'pm25' ? '1-hour PM2.5' : '24-hour PSI';
+  const unit = state.activeMetric === 'pm25' ? 'µg/m³' : 'PSI';
+  $('guide-current').dataset.tone = info.tone;
+  setText('guide-current-title', region + ' · ' + fmt(value) + ' ' + unit + ' · ' + info.label);
+  setText('guide-current-time', metric + ' · ' + feedStatus(state.activeMetric));
+  document.querySelectorAll('table[data-guide-metric]').forEach(table => {
+    const current = band(table.dataset.guideMetric,reading(table.dataset.guideMetric));
+    table.querySelectorAll('tbody tr').forEach((row,index) => {
+      const active = current.level === index + 1;
+      row.dataset.current = String(active); row.setAttribute('aria-current',String(active));
+    });
+  });
+}
+</script></body></html>
